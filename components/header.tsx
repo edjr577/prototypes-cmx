@@ -128,7 +128,7 @@ export function Header() {
   }
 
   return (
-    <header className="sticky top-0 z-50 flex h-14 items-center justify-between bg-background px-4 select-none border-b border-border/40">
+    <header className="sticky top-0 z-50 flex h-14 items-center justify-between bg-background px-4 select-none">
       <div className="flex items-center gap-4">
         <DropdownMenu>
           <DropdownMenuTrigger
@@ -214,57 +214,7 @@ export function Header() {
             />
           </div>
 
-          {/* Office Switcher */}
-          <div className="h-4 w-px bg-border/40 mx-1" />
-          <DropdownMenu>
-            <DropdownMenuTrigger
-              render={
-                <button className="flex items-center gap-1.5 hover:bg-muted/40 p-1 px-2 rounded-lg transition-colors cursor-pointer text-left focus:outline-none focus:ring-1 focus:ring-ring/40">
-                  <span className={`size-2 rounded-full ${activeTenant.color}`} />
-                  <span className="text-xs font-semibold text-foreground max-w-[140px] truncate">
-                    {activeTenant.name}
-                  </span>
-                  <ChevronDown className="size-3 text-muted-foreground/60" />
-                </button>
-              }
-            />
-            <DropdownMenuContent align="start" className="w-64 p-1.5 border border-border shadow-md rounded-xl">
-              <DropdownMenuGroup>
-                <DropdownMenuLabel className="text-[10px] text-muted-foreground/65 tracking-wider uppercase font-semibold px-2 pb-1.5">
-                  Trocar de Escritório
-                </DropdownMenuLabel>
-                <div className="flex flex-col gap-0.5">
-                  {tenants.map((tenant) => {
-                    const isSelected = tenant.id === activeTenant.id;
-                    return (
-                      <DropdownMenuItem
-                        key={tenant.id}
-                        onClick={() => {
-                          if (!isSelected) {
-                            setIsLoading(true);
-                            setLoadingModuleName(tenant.name);
-                            setTimeout(() => {
-                              setActiveTenantById(tenant.id);
-                              setIsLoading(false);
-                              router.refresh();
-                            }, 1000);
-                          }
-                        }}
-                        className={`flex items-start gap-2.5 p-2 rounded-lg cursor-pointer ${isSelected ? 'bg-accent/85' : ''}`}
-                      >
-                        <span className={`size-2.5 rounded-full shrink-0 mt-1 ${tenant.color}`} />
-                        <div className="flex flex-col min-w-0">
-                          <span className="text-xs font-semibold text-foreground truncate">{tenant.name}</span>
-                          <span className="text-[9px] text-muted-foreground truncate">{tenant.description}</span>
-                        </div>
-                        {isSelected && <Check className="size-3.5 text-primary shrink-0 ml-auto mt-0.5" />}
-                      </DropdownMenuItem>
-                    );
-                  })}
-                </div>
-              </DropdownMenuGroup>
-            </DropdownMenuContent>
-          </DropdownMenu>
+
 
           {currentModule && (
             <nav aria-label="Breadcrumb" className="flex items-center">

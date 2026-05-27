@@ -135,13 +135,130 @@ export function ControladoriaSidebar() {
   };
 
   return (
-    <aside className="flex h-[calc(100vh-3.5rem)] w-64 flex-col bg-background select-none border-r border-border/40 shrink-0">
-      {/* Office Switcher - Fixo no topo da Sidebar */}
-      <div className="p-3 border-b border-border/30 shrink-0 bg-background/95 backdrop-blur-sm z-10">
+    <aside className="flex h-full w-64 flex-col bg-background select-none shrink-0">
+      
+      {/* Navegação Principal com Scroll */}
+      <div className="flex-1 overflow-y-auto no-scrollbar">
+        <nav className="p-3 space-y-3 pb-8">
+          {menuData.map((section) => {
+            const SectionIcon = section.icon;
+            const isOpen = openSections[section.id];
+
+            return (
+              <div key={section.id} className="flex flex-col">
+                {/* Category Header Button */}
+                <button
+                  onClick={() => toggleSection(section.id)}
+                  className="flex w-full items-center justify-between rounded-lg px-2.5 py-2 text-left hover:bg-muted/40 transition-colors cursor-pointer group"
+                >
+                  <div className="flex items-center gap-2.5">
+                    <SectionIcon className="size-4.5 text-muted-foreground group-hover:text-foreground transition-colors" />
+                    <span className="text-xs font-semibold text-foreground/90 group-hover:text-foreground tracking-wide">
+                      {section.title}
+                    </span>
+                  </div>
+                  <ChevronRight className={cn(
+                    "size-3.5 text-muted-foreground/60 transition-transform duration-200 pointer-events-none",
+                    isOpen && "rotate-90"
+                  )} />
+                </button>
+
+                {/* Sub-items list with anim trigger */}
+                <div className={cn(
+                  "mt-0.5 flex flex-col pl-3.5 border-l border-border/10 ml-4.5 gap-0.5 transition-all duration-200 overflow-hidden",
+                  isOpen ? "max-h-[800px] opacity-100 py-1" : "max-h-0 opacity-0 py-0"
+                )}>
+                  {section.items.map((item, idx) => {
+                    const ItemIcon = item.icon;
+                    const isActive = pathname === item.href;
+
+                    // Render Settings category labels
+                    if (item.isHeader) {
+                      return (
+                        <div
+                          key={`header-${idx}`}
+                          className="text-[10px] font-bold text-muted-foreground/50 tracking-widest uppercase pt-2.5 pb-1 px-2.5"
+                        >
+                          {item.name}
+                        </div>
+                      );
+                    }
+
+                    // Only Controladoria Dashboard "/controladoria" is active
+                    const isDashboard = item.href === "/controladoria";
+                    const isTarefas = item.name === "Tarefas";
+
+                    return (
+                      <div key={item.name} className="flex flex-col">
+                        {isDashboard ? (
+                          <Link
+                            href={item.href}
+                            className={cn(
+                              "flex items-start gap-2.5 rounded-md px-2.5 py-1.5 text-left transition-colors cursor-pointer",
+                              isActive
+                                ? "bg-accent text-accent-foreground font-medium"
+                                : "text-muted-foreground/80 hover:bg-muted/30 hover:text-foreground"
+                            )}
+                          >
+                            <ItemIcon className="size-3.5 mt-0.5 shrink-0" />
+                            <div className="flex flex-col">
+                              <span className="text-xs leading-none font-medium">{item.name}</span>
+                              {item.description && (
+                                <span className="text-[10px] text-muted-foreground/60 mt-0.5 font-normal leading-tight">
+                                  {item.description}
+                                </span>
+                              )}
+                            </div>
+                          </Link>
+                        ) : (
+                          <div
+                            className="flex items-center justify-between rounded-md px-2.5 py-1.5 text-left text-muted-foreground/40 cursor-not-allowed hover:bg-muted/10 transition-colors group/item"
+                            title="Opção desativada neste protótipo"
+                          >
+                            <div className="flex items-start gap-2.5 flex-1 min-w-0">
+                              <ItemIcon className="size-3.5 mt-0.5 shrink-0" />
+                              <div className="flex flex-col">
+                                <span className="text-xs leading-none font-medium">{item.name}</span>
+                                {item.description && (
+                                  <span className="text-[10px] text-muted-foreground/30 mt-0.5 font-normal leading-tight">
+                                    {item.description}
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+                            
+                            {/* Inline Action Button for "Tarefas" */}
+                            {isTarefas && (
+                              <button
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  e.stopPropagation();
+                                  alert("Criar Nova Tarefa!");
+                                }}
+                                className="opacity-0 group-hover/item:opacity-100 size-4.5 rounded bg-primary/10 hover:bg-primary/20 text-primary flex items-center justify-center transition-all cursor-pointer mr-0.5"
+                                title="Nova tarefa"
+                              >
+                                <Plus className="size-3" />
+                              </button>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            );
+          })}
+        </nav>
+      </div>
+
+      {/* Office Switcher - Fixo no rodapé da Sidebar */}
+      <div className="p-3 shrink-0 bg-background/95 backdrop-blur-sm z-10">
         <DropdownMenu>
           <DropdownMenuTrigger
             render={
-              <button className="flex w-full items-center justify-between hover:bg-muted/40 p-2 rounded-lg transition-colors cursor-pointer text-left border border-border/30 focus:outline-none focus:ring-1 focus:ring-ring/40 bg-card">
+              <button className="flex w-full items-center justify-between hover:bg-muted/40 p-2 rounded-lg transition-colors cursor-pointer text-left border border-border/30 focus:outline-none focus:ring-1 focus:ring-ring/40 bg-card shadow-sm">
                 <div className="flex items-center gap-2 min-w-0">
                   <span className={`size-2.5 rounded-full shrink-0 ${activeTenant.color}`} />
                   <span className="text-xs font-bold text-foreground truncate max-w-[150px]">
@@ -191,121 +308,6 @@ export function ControladoriaSidebar() {
         </DropdownMenu>
       </div>
 
-      {/* Navegação Principal com Scroll */}
-      <div className="flex-1 overflow-y-auto no-scrollbar">
-        <nav className="p-3 space-y-3 pb-8">
-        {menuData.map((section) => {
-          const SectionIcon = section.icon;
-          const isOpen = openSections[section.id];
-
-          return (
-            <div key={section.id} className="flex flex-col">
-              {/* Category Header Button */}
-              <button
-                onClick={() => toggleSection(section.id)}
-                className="flex w-full items-center justify-between rounded-lg px-2.5 py-2 text-left hover:bg-muted/40 transition-colors cursor-pointer group"
-              >
-                <div className="flex items-center gap-2.5">
-                  <SectionIcon className="size-4.5 text-muted-foreground group-hover:text-foreground transition-colors" />
-                  <span className="text-xs font-semibold text-foreground/90 group-hover:text-foreground tracking-wide">
-                    {section.title}
-                  </span>
-                </div>
-                <ChevronRight className={cn(
-                  "size-3.5 text-muted-foreground/60 transition-transform duration-200 pointer-events-none",
-                  isOpen && "rotate-90"
-                )} />
-              </button>
-
-              {/* Sub-items list with anim trigger */}
-              <div className={cn(
-                "mt-0.5 flex flex-col pl-3.5 border-l border-border/10 ml-4.5 gap-0.5 transition-all duration-200 overflow-hidden",
-                isOpen ? "max-h-[800px] opacity-100 py-1" : "max-h-0 opacity-0 py-0"
-              )}>
-                {section.items.map((item, idx) => {
-                  const ItemIcon = item.icon;
-                  const isActive = pathname === item.href;
-
-                  // Render Settings category labels
-                  if (item.isHeader) {
-                    return (
-                      <div
-                        key={`header-${idx}`}
-                        className="text-[10px] font-bold text-muted-foreground/50 tracking-widest uppercase pt-2.5 pb-1 px-2.5"
-                      >
-                        {item.name}
-                      </div>
-                    );
-                  }
-
-                  // Only Controladoria Dashboard "/controladoria" is active
-                  const isDashboard = item.href === "/controladoria";
-                  const isTarefas = item.name === "Tarefas";
-
-                  return (
-                    <div key={item.name} className="flex flex-col">
-                      {isDashboard ? (
-                        <Link
-                          href={item.href}
-                          className={cn(
-                            "flex items-start gap-2.5 rounded-md px-2.5 py-1.5 text-left transition-colors cursor-pointer",
-                            isActive
-                              ? "bg-accent text-accent-foreground font-medium"
-                              : "text-muted-foreground/80 hover:bg-muted/30 hover:text-foreground"
-                          )}
-                        >
-                          <ItemIcon className="size-3.5 mt-0.5 shrink-0" />
-                          <div className="flex flex-col">
-                            <span className="text-xs leading-none font-medium">{item.name}</span>
-                            {item.description && (
-                              <span className="text-[10px] text-muted-foreground/60 mt-0.5 font-normal leading-tight">
-                                {item.description}
-                              </span>
-                            )}
-                          </div>
-                        </Link>
-                      ) : (
-                        <div
-                          className="flex items-center justify-between rounded-md px-2.5 py-1.5 text-left text-muted-foreground/40 cursor-not-allowed hover:bg-muted/10 transition-colors group/item"
-                          title="Opção desativada neste protótipo"
-                        >
-                          <div className="flex items-start gap-2.5 flex-1 min-w-0">
-                            <ItemIcon className="size-3.5 mt-0.5 shrink-0" />
-                            <div className="flex flex-col">
-                              <span className="text-xs leading-none font-medium">{item.name}</span>
-                              {item.description && (
-                                <span className="text-[10px] text-muted-foreground/30 mt-0.5 font-normal leading-tight">
-                                  {item.description}
-                                </span>
-                              )}
-                            </div>
-                          </div>
-                          
-                          {/* Inline Action Button for "Tarefas" */}
-                          {isTarefas && (
-                            <button
-                              onClick={(e) => {
-                                e.preventDefault();
-                                e.stopPropagation();
-                                alert("Criar Nova Tarefa!");
-                              }}
-                              className="opacity-0 group-hover/item:opacity-100 size-4.5 rounded bg-primary/10 hover:bg-primary/20 text-primary flex items-center justify-center transition-all cursor-pointer mr-0.5"
-                              title="Nova tarefa"
-                            >
-                              <Plus className="size-3" />
-                            </button>
-                          )}
-                        </div>
-                      )}
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-          );
-        })}
-      </nav>
-      </div>
     </aside>
   );
 }
