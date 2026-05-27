@@ -110,7 +110,7 @@ export default function ControladoriaPage() {
   return (
     <div className="flex flex-col gap-6 pb-12">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight text-foreground">Dashboard da Controladoria Operacional</h1>
+        <h1 className="text-3xl font-bold tracking-tight text-foreground">Dashboard Operacional</h1>
         <p className="text-muted-foreground">
           Logs de execução de robôs coletores (CRONs), confiança da IA e filas de revisão de prazos
         </p>
@@ -133,7 +133,7 @@ export default function ControladoriaPage() {
                 <CalendarIcon className="mr-2 h-4 w-4 text-muted-foreground/60" />
                 <span>Início: {formatDate(startDate)}</span>
               </Button>
-              
+
               {showStartCalendar && (
                 <div className="absolute top-11 left-0 z-50 p-3 rounded-lg border border-border bg-popover text-popover-foreground shadow-md outline-none animate-in fade-in-50 slide-in-from-top-1 w-64">
                   <div className="flex items-center justify-between pb-2 mb-2 border-b border-border/50">
@@ -157,9 +157,8 @@ export default function ControladoriaPage() {
                             setStartDate(new Date(2026, 4, day));
                             setShowStartCalendar(false);
                           }}
-                          className={`size-7 text-xs rounded-md flex items-center justify-center transition-all hover:bg-accent hover:text-accent-foreground cursor-pointer ${
-                            isSelected ? "bg-primary text-primary-foreground font-semibold hover:bg-primary hover:text-primary-foreground" : ""
-                          }`}
+                          className={`size-7 text-xs rounded-md flex items-center justify-center transition-all hover:bg-accent hover:text-accent-foreground cursor-pointer ${isSelected ? "bg-primary text-primary-foreground font-semibold hover:bg-primary hover:text-primary-foreground" : ""
+                            }`}
                         >
                           {day}
                         </button>
@@ -185,7 +184,7 @@ export default function ControladoriaPage() {
                 <CalendarIcon className="mr-2 h-4 w-4 text-muted-foreground/60" />
                 <span>Fim: {formatDate(endDate)}</span>
               </Button>
-              
+
               {showEndCalendar && (
                 <div className="absolute top-11 left-0 z-50 p-3 rounded-lg border border-border bg-popover text-popover-foreground shadow-md outline-none animate-in fade-in-50 slide-in-from-top-1 w-64">
                   <div className="flex items-center justify-between pb-2 mb-2 border-b border-border/50">
@@ -209,9 +208,8 @@ export default function ControladoriaPage() {
                             setEndDate(new Date(2026, 4, day));
                             setShowEndCalendar(false);
                           }}
-                          className={`size-7 text-xs rounded-md flex items-center justify-center transition-all hover:bg-accent hover:text-accent-foreground cursor-pointer ${
-                            isSelected ? "bg-primary text-primary-foreground font-semibold hover:bg-primary hover:text-primary-foreground" : ""
-                          }`}
+                          className={`size-7 text-xs rounded-md flex items-center justify-center transition-all hover:bg-accent hover:text-accent-foreground cursor-pointer ${isSelected ? "bg-primary text-primary-foreground font-semibold hover:bg-primary hover:text-primary-foreground" : ""
+                            }`}
                         >
                           {day}
                         </button>

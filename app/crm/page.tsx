@@ -129,7 +129,7 @@ export default function CRMPage() {
   return (
     <div className="flex flex-col gap-6 pb-12">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight text-foreground">Dashboard de Atendimento CRM</h1>
+        <h1 className="text-3xl font-bold tracking-tight text-foreground">Dashboard de Atendimento</h1>
         <p className="text-muted-foreground">
           Acompanhamento em tempo real das métricas de atendimento ao cliente
         </p>
@@ -152,7 +152,7 @@ export default function CRMPage() {
                 <Calendar className="mr-2 h-4 w-4 text-muted-foreground/60" />
                 <span>Início: {formatDate(startDate)} 00:00</span>
               </Button>
-              
+
               {showStartCalendar && (
                 <div className="absolute top-11 left-0 z-50 p-3 rounded-lg border border-border bg-popover text-popover-foreground shadow-md outline-none animate-in fade-in-50 slide-in-from-top-1 w-64">
                   <div className="flex items-center justify-between pb-2 mb-2 border-b border-border/50">
@@ -178,9 +178,8 @@ export default function CRMPage() {
                             setStartDate(new Date(2026, 4, day));
                             setShowStartCalendar(false);
                           }}
-                          className={`size-7 text-xs rounded-md flex items-center justify-center transition-all hover:bg-accent hover:text-accent-foreground cursor-pointer ${
-                            isSelected ? "bg-primary text-primary-foreground font-semibold hover:bg-primary hover:text-primary-foreground" : ""
-                          }`}
+                          className={`size-7 text-xs rounded-md flex items-center justify-center transition-all hover:bg-accent hover:text-accent-foreground cursor-pointer ${isSelected ? "bg-primary text-primary-foreground font-semibold hover:bg-primary hover:text-primary-foreground" : ""
+                            }`}
                         >
                           {day}
                         </button>
@@ -206,7 +205,7 @@ export default function CRMPage() {
                 <Calendar className="mr-2 h-4 w-4 text-muted-foreground/60" />
                 <span>Fim: {formatDate(endDate)} 23:59</span>
               </Button>
-              
+
               {showEndCalendar && (
                 <div className="absolute top-11 left-0 z-50 p-3 rounded-lg border border-border bg-popover text-popover-foreground shadow-md outline-none animate-in fade-in-50 slide-in-from-top-1 w-64">
                   <div className="flex items-center justify-between pb-2 mb-2 border-b border-border/50">
@@ -232,9 +231,8 @@ export default function CRMPage() {
                             setEndDate(new Date(2026, 4, day));
                             setShowEndCalendar(false);
                           }}
-                          className={`size-7 text-xs rounded-md flex items-center justify-center transition-all hover:bg-accent hover:text-accent-foreground cursor-pointer ${
-                            isSelected ? "bg-primary text-primary-foreground font-semibold hover:bg-primary hover:text-primary-foreground" : ""
-                          }`}
+                          className={`size-7 text-xs rounded-md flex items-center justify-center transition-all hover:bg-accent hover:text-accent-foreground cursor-pointer ${isSelected ? "bg-primary text-primary-foreground font-semibold hover:bg-primary hover:text-primary-foreground" : ""
+                            }`}
                         >
                           {day}
                         </button>
