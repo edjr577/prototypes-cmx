@@ -65,24 +65,23 @@ export function Header() {
             <DropdownMenuGroup>
               <DropdownMenuLabel>Modulos</DropdownMenuLabel>
               {modules.map((module) => (
-                <DropdownMenuItem key={module.href} asChild>
-                  <Link
-                    href={module.href}
-                    className="flex cursor-pointer items-center gap-3"
-                    onClick={() => setOpen(false)}
+                <DropdownMenuItem
+                  key={module.href}
+                  render={<Link href={module.href} />}
+                  className="flex cursor-pointer items-center gap-3 py-2"
+                  onClick={() => setOpen(false)}
+                >
+                  <span
+                    className={`flex size-9 items-center justify-center rounded-lg ${module.color} text-white`}
                   >
-                    <div
-                      className={`flex size-9 items-center justify-center rounded-lg ${module.color} text-white`}
-                    >
-                      <module.icon className="size-5" />
-                    </div>
-                    <div className="flex flex-col">
-                      <span className="font-medium">{module.name}</span>
-                      <span className="text-xs text-muted-foreground">
-                        {module.description}
-                      </span>
-                    </div>
-                  </Link>
+                    <module.icon className="size-5" />
+                  </span>
+                  <span className="flex flex-col">
+                    <span className="font-medium">{module.name}</span>
+                    <span className="text-xs text-muted-foreground">
+                      {module.description}
+                    </span>
+                  </span>
                 </DropdownMenuItem>
               ))}
             </DropdownMenuGroup>
