@@ -20,7 +20,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 
 const modules = [
   {
@@ -109,7 +109,6 @@ export function Header() {
           <Bell data-icon />
         </Button>
         <Avatar className="size-8">
-          <AvatarImage src="/avatar.png" alt="Usuario" />
           <AvatarFallback>US</AvatarFallback>
         </Avatar>
       </div>
