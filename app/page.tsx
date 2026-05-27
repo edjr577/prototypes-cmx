@@ -1,22 +1,20 @@
-import { Button } from "@/components/ui/button";
+"use client";
+
+import { useState } from "react";
+import { Sidebar, type ViewType } from "@/components/sidebar";
+import { CRMView, ERPView, ControladoriaView } from "@/components/views";
 
 export default function Home() {
+  const [activeView, setActiveView] = useState<ViewType>("crm");
+
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center gap-6 p-8">
-      <div className="max-w-2xl text-center">
-        <h1 className="text-4xl font-bold tracking-tight text-foreground sm:text-5xl">
-          Prototypes CMX
-        </h1>
-        <p className="mt-4 text-lg text-muted-foreground">
-          Bem-vindo ao projeto de protótipos. Vamos construir algo incrível!
-        </p>
-      </div>
-      <div className="flex gap-3">
-        <Button>Primario</Button>
-        <Button variant="outline">Outline</Button>
-        <Button variant="secondary">Secundario</Button>
-        <Button variant="ghost">Ghost</Button>
-      </div>
-    </main>
+    <div className="flex min-h-screen bg-background">
+      <Sidebar activeView={activeView} onViewChange={setActiveView} />
+      <main className="ml-64 flex-1 p-6">
+        {activeView === "crm" && <CRMView />}
+        {activeView === "erp" && <ERPView />}
+        {activeView === "controladoria" && <ControladoriaView />}
+      </main>
+    </div>
   );
 }

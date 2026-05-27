@@ -11,8 +11,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Prototypes CMX",
-  description: "Protótipos e experimentos",
+  title: "CMX Platform - Gestao Empresarial",
+  description: "Plataforma integrada de CRM, ERP e Controladoria",
 };
 
 export default function RootLayout({
