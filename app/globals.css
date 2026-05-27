@@ -57,8 +57,8 @@
   --accent-foreground: oklch(0.985 0 0);
   --destructive: oklch(0.704 0.191 22.216);
   --destructive-foreground: 0 0% 98%;
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
+  --border: oklch(0.24 0 0); /* Solid dark grey (zinc-800 equivalent) */
+  --input: oklch(0.26 0 0);  /* Solid dark grey */
   --ring: oklch(0.556 0 0);
   --chart-1: oklch(0.87 0 0);
   --chart-2: oklch(0.556 0 0);
@@ -71,17 +71,17 @@
   --sidebar-primary-foreground: oklch(0.985 0 0);
   --sidebar-accent: oklch(0.269 0 0);
   --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
+  --sidebar-border: oklch(0.24 0 0); /* Solid dark grey */
   --sidebar-ring: oklch(0.556 0 0);
 }
 
 * {
-  border-color: hsl(var(--border));
+  border-color: var(--border);
 }
 
 body {
-  background-color: hsl(var(--background));
-  color: hsl(var(--foreground));
+  background-color: var(--background);
+  color: var(--foreground);
   font-family: var(--font-sans), system-ui, sans-serif;
 }
 

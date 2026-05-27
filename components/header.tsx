@@ -2,6 +2,8 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useTheme } from "next-themes";
+import * as React from "react";
 import {
   LayoutGrid,
   Users,
@@ -9,6 +11,21 @@ import {
   PieChart,
   Bell,
   Search,
+  MessageSquare,
+  Phone,
+  History,
+  ChevronDown,
+  ChevronRight,
+  User,
+  Lock,
+  Shield,
+  LogOut,
+  Pencil,
+  Sun,
+  Moon,
+  Tv,
+  Monitor,
+  Laptop
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -17,9 +34,10 @@ import {
   DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 const modules = [
   {
@@ -47,11 +65,25 @@ const modules = [
 
 export function Header() {
   const pathname = usePathname();
-
+  const { theme, setTheme } = useTheme();
+  
   const currentModule = modules.find((m) => pathname.startsWith(m.href));
+  const isCRM = pathname.startsWith("/crm");
+
+  // Date and Time mock exactly matching the user request
+  const [currentDateTime, setCurrentDateTime] = React.useState("27/05/2026 15:13:36");
+
+  React.useEffect(() => {
+    const interval = setInterval(() => {
+      const now = new Date();
+      const formatted = now.toLocaleDateString('pt-BR') + ' ' + now.toLocaleTimeString('pt-BR');
+      setCurrentDateTime(formatted);
+    }, 1000);
+    return () => clearInterval(interval);
+  }, []);
 
   return (
-    <header className="sticky top-0 z-50 flex h-14 items-center justify-between border-b bg-background px-4">
+    <header className="sticky top-0 z-50 flex h-14 items-center justify-between bg-background px-4 select-none">
       <div className="flex items-center gap-4">
         <DropdownMenu>
           <DropdownMenuTrigger
@@ -66,22 +98,22 @@ export function Header() {
                 const Icon = module.icon;
                 return (
                   <DropdownMenuItem
-                    key={module.href}
-                    render={<Link href={module.href} />}
-                    className="flex cursor-pointer items-center gap-3 py-2"
-                  >
-                    <span
-                      className={`flex size-9 items-center justify-center rounded-lg ${module.color} text-white`}
-                    >
-                      <Icon className="size-5" />
-                    </span>
-                    <span className="flex flex-col">
-                      <span className="font-medium">{module.name}</span>
-                      <span className="text-xs text-muted-foreground">
-                        {module.description}
-                      </span>
-                    </span>
-                  </DropdownMenuItem>
+                     key={module.href}
+                     render={<Link href={module.href} />}
+                     className="flex cursor-pointer items-center gap-3 py-2"
+                   >
+                     <span
+                       className={`flex size-9 items-center justify-center rounded-lg ${module.color} text-white`}
+                     >
+                       <Icon className="size-5" />
+                     </span>
+                     <span className="flex flex-col">
+                       <span className="font-medium">{module.name}</span>
+                       <span className="text-xs text-muted-foreground">
+                         {module.description}
+                       </span>
+                     </span>
+                   </DropdownMenuItem>
                 );
               })}
             </DropdownMenuGroup>
@@ -89,28 +121,231 @@ export function Header() {
         </DropdownMenu>
 
         <div className="flex items-center gap-2">
-          <span className="text-lg font-semibold text-foreground">CMX</span>
+          {/* Logo - non-clickable wrapper with spacing */}
+          <div className="flex items-center shrink-0 mr-3 pointer-events-none">
+            <img 
+              src="https://legaltechhub.com.br/assets/logo-BQhEdYxV.png" 
+              className="h-6 w-auto object-contain dark:brightness-0 dark:invert transition-all duration-200" 
+              alt="LegalTech Logo" 
+            />
+          </div>
+
           {currentModule && (
-            <>
-              <span className="text-muted-foreground">/</span>
-              <span className="text-lg font-medium text-foreground">
-                {currentModule.name}
-              </span>
-            </>
+            <nav aria-label="Breadcrumb" className="flex items-center">
+              <ol className="flex items-center gap-2 text-sm text-muted-foreground select-none">
+                {/* First item: non-clickable, no hover state */}
+                <li className="flex items-center">
+                  <span className="font-bold text-2xs uppercase tracking-wider text-muted-foreground/80">
+                    {currentModule.name}
+                  </span>
+                </li>
+                
+                <li role="presentation" aria-hidden="true" className="flex items-center text-muted-foreground/30 pointer-events-none">
+                  <ChevronRight className="size-3.5" />
+                </li>
+                
+                <li className="flex items-center">
+                  <span role="link" aria-disabled="true" aria-current="page" className="font-normal text-foreground">
+                    Dashboard
+                  </span>
+                </li>
+              </ol>
+            </nav>
           )}
         </div>
       </div>
 
-      <div className="flex items-center gap-2">
-        <Button variant="ghost" size="icon" className="size-9">
-          <Search data-icon />
-        </Button>
-        <Button variant="ghost" size="icon" className="size-9">
-          <Bell data-icon />
-        </Button>
-        <Avatar className="size-8">
-          <AvatarFallback>US</AvatarFallback>
-        </Avatar>
+      {/* --- RIGHT ACTION GROUP --- */}
+      <div className="flex items-center gap-3">
+        {isCRM && (
+          <>
+            {/* Atendimentos Pill Button */}
+            <Button variant="outline" className="h-9 gap-2 bg-blue-500/10 text-blue-500 border-blue-500/20 rounded-lg hover:bg-blue-500/20 font-medium px-4 cursor-pointer">
+              <MessageSquare className="size-4 text-blue-500" />
+              <span className="text-xs">Atendimentos</span>
+            </Button>
+
+            {/* Separator Line */}
+            <div className="h-4 w-px bg-border/80" />
+          </>
+        )}
+
+        {/* Action Icon Row */}
+        <div className="flex items-center gap-1.5 text-muted-foreground">
+          {/* Brazil Flag Icon */}
+          <button className="flex size-8 items-center justify-center rounded-md hover:bg-muted/40 text-lg transition-colors cursor-pointer" title="Idioma: Português">
+            🇧🇷
+          </button>
+          
+          {isCRM && (
+            <>
+              <button className="flex size-8 items-center justify-center rounded-md hover:bg-muted/40 transition-colors cursor-pointer" title="Mensagens">
+                <MessageSquare className="size-4.5" />
+              </button>
+
+              <button className="flex size-8 items-center justify-center rounded-md hover:bg-muted/40 transition-colors cursor-pointer" title="Ligações VoIP">
+                <Phone className="size-4.5" />
+              </button>
+            </>
+          )}
+
+          <button className="flex size-8 items-center justify-center rounded-md hover:bg-muted/40 transition-colors cursor-pointer" title="Notificações">
+            <Bell className="size-4.5" />
+          </button>
+
+          <button className="flex size-8 items-center justify-center rounded-md hover:bg-muted/40 transition-colors cursor-pointer" title="Mensagens Agendadas">
+            <History className="size-4.5" />
+          </button>
+
+          {isCRM && (
+            <button className="flex size-8 items-center justify-center rounded-md hover:bg-muted/40 transition-colors cursor-pointer" title="Tutoriais">
+              <Tv className="size-4.5" />
+            </button>
+          )}
+        </div>
+
+        {/* Separator Line */}
+        <div className="h-4 w-px bg-border/80" />
+
+        {/* User Profile Dropdown */}
+        <DropdownMenu>
+          <DropdownMenuTrigger
+            render={
+              <button className="flex items-center gap-2 hover:bg-muted/40 p-1 px-2 rounded-lg transition-colors cursor-pointer text-left focus:outline-none focus:ring-1 focus:ring-ring/50">
+                <div className="relative">
+                  <Avatar className="size-8 border border-border">
+                    <AvatarImage src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=100&auto=format&fit=crop" alt="Edmilson" />
+                    <AvatarFallback>ED</AvatarFallback>
+                  </Avatar>
+                  <span className="absolute bottom-0 right-0 size-2.5 rounded-full border-2 border-background bg-emerald-500" />
+                </div>
+                <div className="flex flex-col">
+                  <span className="text-xs font-bold text-foreground leading-none">EDMILSON</span>
+                  <span className="text-[10px] text-muted-foreground leading-none mt-0.5">admin</span>
+                </div>
+                <ChevronDown className="size-3.5 text-muted-foreground/60" />
+              </button>
+            }
+          />
+          
+          <DropdownMenuContent align="end" className="w-[310px] p-2 flex flex-col gap-1.5 !overflow-visible border border-border shadow-md rounded-xl">
+            {/* Header: Unified Profile Box (Horizontal design, no vertical split, no asymmetrical voids) */}
+            <div className="flex items-center gap-3.5 p-2 bg-muted/40 rounded-lg border border-border/20">
+              <div className="relative group/avatar cursor-pointer">
+                <Avatar className="size-12 border border-border">
+                  <AvatarImage src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=200&auto=format&fit=crop" />
+                  <AvatarFallback>ED</AvatarFallback>
+                </Avatar>
+                <div className="absolute inset-0 bg-black/40 rounded-full flex items-center justify-center opacity-0 group-hover/avatar:opacity-100 transition-opacity">
+                  <Pencil className="size-3 text-white" />
+                </div>
+              </div>
+              
+              <div className="flex-1 flex flex-col min-w-0">
+                <span className="text-[11px] text-muted-foreground leading-none font-medium">Olá!</span>
+                <span className="text-sm font-bold text-foreground leading-none mt-1 truncate">EDMILSON</span>
+                <span className="text-[10px] text-muted-foreground/75 leading-none mt-1">admin</span>
+              </div>
+
+              {/* Online Pill Trigger (More compact and aligned) */}
+              <div className="flex items-center bg-emerald-500/10 text-emerald-500 border border-emerald-500/20 px-2 py-1 rounded-full text-[10px] font-bold select-none cursor-pointer">
+                <span className="size-1.5 rounded-full bg-emerald-500 mr-1.5" />
+                <span className="uppercase tracking-wider mr-1 text-[9px]">Online</span>
+                <ChevronDown className="size-2.5 text-emerald-500" />
+              </div>
+            </div>
+
+            <DropdownMenuSeparator className="bg-border/30 my-0.5" />
+
+            {/* Menu Items: Full-width list, beautifully integrated */}
+            <div className="flex flex-col gap-0.5">
+              {/* Profile Link */}
+              <div className="flex items-center gap-3 text-xs text-foreground/80 hover:bg-muted/70 px-2.5 py-2 rounded-lg transition-colors cursor-pointer">
+                <User className="size-4 text-muted-foreground/70" />
+                <span className="font-medium">Meu Perfil</span>
+              </div>
+
+              {/* Theme Selector (Integrated cleanly as a full-width settings row!) */}
+              <div className="flex items-center justify-between text-xs text-foreground/80 hover:bg-muted/70 px-2.5 py-1.5 rounded-lg transition-colors cursor-pointer">
+                <div className="flex items-center gap-3">
+                  {theme === "dark" ? (
+                    <Moon className="size-4 text-muted-foreground/70" />
+                  ) : (
+                    <Sun className="size-4 text-muted-foreground/70" />
+                  )}
+                  <span className="font-medium">Aparência</span>
+                </div>
+                
+                {/* Micro-toggle inside select bar */}
+                <div className="bg-muted/90 p-0.5 rounded-md flex items-center gap-0.5 border border-border/40 scale-95 origin-right">
+                  <button 
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setTheme("dark");
+                    }}
+                    className={`p-1 rounded-md transition-all cursor-pointer ${theme === "dark" ? "bg-background text-foreground shadow-sm" : "text-muted-foreground/75 hover:text-foreground"}`}
+                    title="Modo Escuro"
+                  >
+                    <Moon className="size-3.5" />
+                  </button>
+                  <button 
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setTheme("light");
+                    }}
+                    className={`p-1 rounded-md transition-all cursor-pointer ${theme === "light" ? "bg-background text-foreground shadow-sm" : "text-muted-foreground/75 hover:text-foreground"}`}
+                    title="Modo Claro"
+                  >
+                    <Sun className="size-3.5" />
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            {/* Security Section (Clean group layout) */}
+            <div className="flex flex-col gap-1 border-t border-border/20 pt-2 mt-1">
+              <span className="text-[9px] font-bold text-muted-foreground/45 tracking-widest uppercase px-2.5 pb-1">
+                Segurança
+              </span>
+              <div className="flex flex-col gap-0.5">
+                <div className="flex items-center gap-3 text-xs text-foreground/80 hover:bg-muted/70 px-2.5 py-2 rounded-lg transition-colors cursor-pointer">
+                  <Lock className="size-4 text-muted-foreground/70" />
+                  <span className="font-medium">Alterar senha</span>
+                </div>
+                <div className="flex items-center gap-3 text-xs text-foreground/80 hover:bg-muted/70 px-2.5 py-2 rounded-lg transition-colors cursor-pointer">
+                  <Shield className="size-4 text-muted-foreground/70" />
+                  <span className="font-medium">Autenticação de dois fatores</span>
+                </div>
+              </div>
+            </div>
+
+            <DropdownMenuSeparator className="bg-border/30 my-0.5" />
+
+            {/* Logout Action */}
+            <div className="flex items-center gap-3 text-xs text-destructive hover:bg-destructive/10 px-2.5 py-2 rounded-lg transition-all cursor-pointer font-medium">
+              <LogOut className="size-4 text-destructive" />
+              <span>Sair da conta</span>
+            </div>
+
+            {/* Premium Compact Footer */}
+            <div className="bg-muted/30 p-2.5 rounded-lg border border-border/40 flex flex-col gap-2 text-center mt-1">
+              <div className="flex justify-center gap-1.5">
+                <span className="text-[8px] font-bold tracking-wide uppercase px-2 py-0.5 rounded bg-blue-500/10 text-blue-500 border border-blue-500/20">
+                  APP: v26.05.25.2
+                </span>
+                <span className="text-[8px] font-bold tracking-wide uppercase px-2 py-0.5 rounded bg-blue-500/10 text-blue-500 border border-blue-500/20">
+                  API: v26.05.25.2.2
+                </span>
+              </div>
+              <div className="text-[10px] text-foreground/90 font-semibold leading-none">
+                Servidor disponível!
+              </div>
+              <div className="text-[9px] text-muted-foreground/60 font-mono leading-none">
+                {currentDateTime}
+              </div>
+            </div>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
     </header>
   );

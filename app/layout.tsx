@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { cn } from "@/lib/utils";
+import { ThemeProvider } from "@/components/theme-provider";
+import { Header } from "@/components/header";
 
 const geist = Geist({subsets:['latin'],variable:'--font-sans'});
 
@@ -15,21 +17,27 @@ export const metadata: Metadata = {
   description: "Plataforma integrada de CRM, ERP e Controladoria",
 };
 
-import { Header } from "@/components/header";
-
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="pt-BR" className={cn("bg-background", "font-sans", geist.variable)}>
+    <html lang="pt-BR" className={cn("bg-background", "font-sans", geist.variable)} suppressHydrationWarning>
       <body
         className={`${geist.variable} ${geistMono.variable} antialiased`}
       >
-        <Header />
-        {children}
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <Header />
+          {children}
+        </ThemeProvider>
       </body>
     </html>
   );
 }
+
