@@ -2,8 +2,17 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
+import { useUser } from "@/app/context/UserContext";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import {
   // Main Category Icons
   LayoutDashboard,
@@ -14,6 +23,8 @@ import {
   ShieldAlert,
   Settings,
   ChevronRight,
+  ChevronDown,
+  Check,
   Plus,
   
   // Sub-items Icons
@@ -103,6 +114,8 @@ const menuData: MenuSection[] = [
 
 export function ControladoriaSidebar() {
   const pathname = usePathname();
+  const router = useRouter();
+  const { tenants, activeTenant, setActiveTenantById, setIsLoading, setLoadingModuleName } = useUser();
   
   // Section toggle state (Geral and Trabalho open by default)
   const [openSections, setOpenSections] = React.useState<Record<string, boolean>>({
@@ -122,8 +135,65 @@ export function ControladoriaSidebar() {
   };
 
   return (
-    <aside className="flex h-[calc(100vh-3.5rem)] w-64 flex-col bg-background overflow-y-auto select-none no-scrollbar">
-      <nav className="flex-1 p-3 space-y-3 pb-8">
+    <aside className="flex h-[calc(100vh-3.5rem)] w-64 flex-col bg-background select-none border-r border-border/40 shrink-0">
+      {/* Office Switcher - Fixo no topo da Sidebar */}
+      <div className="p-3 border-b border-border/30 shrink-0 bg-background/95 backdrop-blur-sm z-10">
+        <DropdownMenu>
+          <DropdownMenuTrigger
+            render={
+              <button className="flex w-full items-center justify-between hover:bg-muted/40 p-2 rounded-lg transition-colors cursor-pointer text-left border border-border/30 focus:outline-none focus:ring-1 focus:ring-ring/40 bg-card">
+                <div className="flex items-center gap-2 min-w-0">
+                  <span className={`size-2.5 rounded-full shrink-0 ${activeTenant.color}`} />
+                  <span className="text-xs font-bold text-foreground truncate max-w-[150px]">
+                    {activeTenant.name}
+                  </span>
+                </div>
+                <ChevronDown className="size-3 text-muted-foreground/60 shrink-0 ml-1.5" />
+              </button>
+            }
+          />
+          <DropdownMenuContent align="start" className="w-58 p-1.5 border border-border shadow-md rounded-xl">
+            <DropdownMenuGroup>
+              <DropdownMenuLabel className="text-[10px] text-muted-foreground/65 tracking-wider uppercase font-semibold px-2 pb-1.5">
+                Trocar de Escritório
+              </DropdownMenuLabel>
+              <div className="flex flex-col gap-0.5">
+                {tenants.map((tenant) => {
+                  const isSelected = tenant.id === activeTenant.id;
+                  return (
+                    <DropdownMenuItem
+                      key={tenant.id}
+                      onClick={() => {
+                        if (!isSelected) {
+                          setIsLoading(true);
+                          setLoadingModuleName(tenant.name);
+                          setTimeout(() => {
+                            setActiveTenantById(tenant.id);
+                            setIsLoading(false);
+                            router.refresh();
+                          }, 1000);
+                        }
+                      }}
+                      className={`flex items-start gap-2.5 p-2 rounded-lg cursor-pointer ${isSelected ? 'bg-accent/85' : ''}`}
+                    >
+                      <span className={`size-2.5 rounded-full shrink-0 mt-1 ${tenant.color}`} />
+                      <div className="flex flex-col min-w-0">
+                        <span className="text-xs font-semibold text-foreground truncate">{tenant.name}</span>
+                        <span className="text-[9px] text-muted-foreground truncate">{tenant.description}</span>
+                      </div>
+                      {isSelected && <Check className="size-3.5 text-primary shrink-0 ml-auto mt-0.5" />}
+                    </DropdownMenuItem>
+                  );
+                })}
+              </div>
+            </DropdownMenuGroup>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
+
+      {/* Navegação Principal com Scroll */}
+      <div className="flex-1 overflow-y-auto no-scrollbar">
+        <nav className="p-3 space-y-3 pb-8">
         {menuData.map((section) => {
           const SectionIcon = section.icon;
           const isOpen = openSections[section.id];
@@ -235,6 +305,7 @@ export function ControladoriaSidebar() {
           );
         })}
       </nav>
+      </div>
     </aside>
   );
 }

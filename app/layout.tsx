@@ -5,6 +5,9 @@ import { cn } from "@/lib/utils";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Header } from "@/components/header";
 
+import { UserProvider } from "@/app/context/UserContext";
+import { RoleSwitcherButton } from "@/components/role-switcher-button";
+
 const geist = Geist({subsets:['latin'],variable:'--font-sans'});
 
 const geistMono = Geist_Mono({
@@ -33,8 +36,11 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <Header />
-          {children}
+          <UserProvider>
+            <Header />
+            {children}
+            <RoleSwitcherButton />
+          </UserProvider>
         </ThemeProvider>
       </body>
     </html>
