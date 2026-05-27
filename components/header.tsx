@@ -54,10 +54,10 @@ export function Header() {
     <header className="sticky top-0 z-50 flex h-14 items-center justify-between border-b bg-background px-4">
       <div className="flex items-center gap-4">
         <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="icon" className="size-9">
-              <LayoutGrid data-icon />
-            </Button>
+          <DropdownMenuTrigger
+            render={<Button variant="ghost" size="icon" className="size-9" />}
+          >
+            <LayoutGrid data-icon />
           </DropdownMenuTrigger>
           <DropdownMenuContent align="start" className="w-72">
             <DropdownMenuGroup>
@@ -65,23 +65,22 @@ export function Header() {
               {modules.map((module) => {
                 const Icon = module.icon;
                 return (
-                  <DropdownMenuItem key={module.href} asChild>
-                    <Link
-                      href={module.href}
-                      className="flex cursor-pointer items-center gap-3 py-2"
+                  <DropdownMenuItem
+                    key={module.href}
+                    render={<Link href={module.href} />}
+                    className="flex cursor-pointer items-center gap-3 py-2"
+                  >
+                    <span
+                      className={`flex size-9 items-center justify-center rounded-lg ${module.color} text-white`}
                     >
-                      <span
-                        className={`flex size-9 items-center justify-center rounded-lg ${module.color} text-white`}
-                      >
-                        <Icon className="size-5" />
+                      <Icon className="size-5" />
+                    </span>
+                    <span className="flex flex-col">
+                      <span className="font-medium">{module.name}</span>
+                      <span className="text-xs text-muted-foreground">
+                        {module.description}
                       </span>
-                      <span className="flex flex-col">
-                        <span className="font-medium">{module.name}</span>
-                        <span className="text-xs text-muted-foreground">
-                          {module.description}
-                        </span>
-                      </span>
-                    </Link>
+                    </span>
                   </DropdownMenuItem>
                 );
               })}
