@@ -15,6 +15,8 @@ export const metadata: Metadata = {
   description: "Plataforma integrada de CRM, ERP e Controladoria",
 };
 
+import { Header } from "@/components/header";
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -25,6 +27,7 @@ export default function RootLayout({
       <body
         className={`${geist.variable} ${geistMono.variable} antialiased`}
       >
+        <Header />
         {children}
       </body>
     </html>
