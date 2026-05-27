@@ -13,12 +13,12 @@ import {
 } from "lucide-react";
 
 const erpItems = [
-  { name: "Dashboard", href: "/erp", icon: LayoutDashboard },
-  { name: "Produtos", href: "/erp/produtos", icon: Package },
-  { name: "Pedidos", href: "/erp/pedidos", icon: ShoppingCart },
-  { name: "Fornecedores", href: "/erp/fornecedores", icon: Truck },
-  { name: "Estoque", href: "/erp/estoque", icon: Warehouse },
-  { name: "Notas Fiscais", href: "/erp/notas-fiscais", icon: FileText },
+  { name: "Dashboard", href: "/erp", icon: LayoutDashboard, enabled: true },
+  { name: "Produtos", href: "/erp/produtos", icon: Package, enabled: false },
+  { name: "Pedidos", href: "/erp/pedidos", icon: ShoppingCart, enabled: false },
+  { name: "Fornecedores", href: "/erp/fornecedores", icon: Truck, enabled: false },
+  { name: "Estoque", href: "/erp/estoque", icon: Warehouse, enabled: false },
+  { name: "Notas Fiscais", href: "/erp/notas-fiscais", icon: FileText, enabled: false },
 ];
 
 export function ERPSidebar() {
@@ -32,6 +32,19 @@ export function ERPSidebar() {
             const isActive =
               pathname === item.href ||
               (item.href !== "/erp" && pathname.startsWith(item.href));
+
+            if (!item.enabled) {
+              return (
+                <li key={item.href}>
+                  <span
+                    className="flex cursor-not-allowed items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-muted-foreground/50"
+                  >
+                    <item.icon className="size-4" />
+                    {item.name}
+                  </span>
+                </li>
+              );
+            }
 
             return (
               <li key={item.href}>

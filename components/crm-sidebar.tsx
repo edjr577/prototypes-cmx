@@ -13,12 +13,12 @@ import {
 } from "lucide-react";
 
 const crmItems = [
-  { name: "Dashboard", href: "/crm", icon: LayoutDashboard },
-  { name: "Contatos", href: "/crm/contatos", icon: Users },
-  { name: "Empresas", href: "/crm/empresas", icon: Building2 },
-  { name: "Oportunidades", href: "/crm/oportunidades", icon: Target },
-  { name: "Campanhas", href: "/crm/campanhas", icon: Mail },
-  { name: "Agenda", href: "/crm/agenda", icon: CalendarDays },
+  { name: "Dashboard", href: "/crm", icon: LayoutDashboard, enabled: true },
+  { name: "Contatos", href: "/crm/contatos", icon: Users, enabled: false },
+  { name: "Empresas", href: "/crm/empresas", icon: Building2, enabled: false },
+  { name: "Oportunidades", href: "/crm/oportunidades", icon: Target, enabled: false },
+  { name: "Campanhas", href: "/crm/campanhas", icon: Mail, enabled: false },
+  { name: "Agenda", href: "/crm/agenda", icon: CalendarDays, enabled: false },
 ];
 
 export function CRMSidebar() {
@@ -32,6 +32,19 @@ export function CRMSidebar() {
             const isActive =
               pathname === item.href ||
               (item.href !== "/crm" && pathname.startsWith(item.href));
+
+            if (!item.enabled) {
+              return (
+                <li key={item.href}>
+                  <span
+                    className="flex cursor-not-allowed items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-muted-foreground/50"
+                  >
+                    <item.icon className="size-4" />
+                    {item.name}
+                  </span>
+                </li>
+              );
+            }
 
             return (
               <li key={item.href}>

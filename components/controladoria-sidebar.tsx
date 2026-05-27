@@ -13,12 +13,12 @@ import {
 } from "lucide-react";
 
 const controladoriaItems = [
-  { name: "Dashboard", href: "/controladoria", icon: LayoutDashboard },
-  { name: "Fluxo de Caixa", href: "/controladoria/fluxo-caixa", icon: Wallet },
-  { name: "DRE", href: "/controladoria/dre", icon: TrendingUp },
-  { name: "Orcamentos", href: "/controladoria/orcamentos", icon: PiggyBank },
-  { name: "Relatorios", href: "/controladoria/relatorios", icon: FileBarChart },
-  { name: "Custos", href: "/controladoria/custos", icon: Calculator },
+  { name: "Dashboard", href: "/controladoria", icon: LayoutDashboard, enabled: true },
+  { name: "Fluxo de Caixa", href: "/controladoria/fluxo-caixa", icon: Wallet, enabled: false },
+  { name: "DRE", href: "/controladoria/dre", icon: TrendingUp, enabled: false },
+  { name: "Orcamentos", href: "/controladoria/orcamentos", icon: PiggyBank, enabled: false },
+  { name: "Relatorios", href: "/controladoria/relatorios", icon: FileBarChart, enabled: false },
+  { name: "Custos", href: "/controladoria/custos", icon: Calculator, enabled: false },
 ];
 
 export function ControladoriaSidebar() {
@@ -32,6 +32,19 @@ export function ControladoriaSidebar() {
             const isActive =
               pathname === item.href ||
               (item.href !== "/controladoria" && pathname.startsWith(item.href));
+
+            if (!item.enabled) {
+              return (
+                <li key={item.href}>
+                  <span
+                    className="flex cursor-not-allowed items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-muted-foreground/50"
+                  >
+                    <item.icon className="size-4" />
+                    {item.name}
+                  </span>
+                </li>
+              );
+            }
 
             return (
               <li key={item.href}>
