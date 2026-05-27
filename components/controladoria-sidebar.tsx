@@ -3,30 +3,35 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
-import { LucideIcon } from "lucide-react";
+import {
+  LayoutDashboard,
+  Wallet,
+  TrendingUp,
+  PiggyBank,
+  FileBarChart,
+  Calculator,
+} from "lucide-react";
 
-export interface SidebarItem {
-  name: string;
-  href: string;
-  icon: LucideIcon;
-}
+const controladoriaItems = [
+  { name: "Dashboard", href: "/controladoria", icon: LayoutDashboard },
+  { name: "Fluxo de Caixa", href: "/controladoria/fluxo-caixa", icon: Wallet },
+  { name: "DRE", href: "/controladoria/dre", icon: TrendingUp },
+  { name: "Orcamentos", href: "/controladoria/orcamentos", icon: PiggyBank },
+  { name: "Relatorios", href: "/controladoria/relatorios", icon: FileBarChart },
+  { name: "Custos", href: "/controladoria/custos", icon: Calculator },
+];
 
-interface ModuleSidebarProps {
-  items: SidebarItem[];
-  baseHref: string;
-}
-
-export function ModuleSidebar({ items, baseHref }: ModuleSidebarProps) {
+export function ControladoriaSidebar() {
   const pathname = usePathname();
 
   return (
     <aside className="flex h-[calc(100vh-3.5rem)] w-60 flex-col border-r bg-background">
       <nav className="flex-1 p-3">
         <ul className="flex flex-col gap-1">
-          {items.map((item) => {
+          {controladoriaItems.map((item) => {
             const isActive =
               pathname === item.href ||
-              (item.href !== baseHref && pathname.startsWith(item.href));
+              (item.href !== "/controladoria" && pathname.startsWith(item.href));
 
             return (
               <li key={item.href}>
