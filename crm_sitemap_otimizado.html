@@ -1,0 +1,173 @@
+
+<style>
+  * { box-sizing: border-box; }
+  .wrap { padding: 1.5rem 0; font-family: var(--font-sans); }
+  .section { margin-bottom: 20px; }
+  .section-header { display: flex; align-items: center; gap: 10px; padding: 10px 14px; background: var(--color-background-secondary); border-radius: var(--border-radius-md); border: 0.5px solid var(--color-border-tertiary); cursor: pointer; user-select: none; }
+  .section-header:hover { background: var(--color-background-tertiary); }
+  .section-icon { font-size: 18px; width: 28px; text-align: center; }
+  .section-title { font-size: 14px; font-weight: 500; color: var(--color-text-primary); flex: 1; }
+  .section-badge { font-size: 11px; padding: 2px 8px; border-radius: 20px; font-weight: 500; }
+  .badge-op { background: var(--color-background-info); color: var(--color-text-info); }
+  .badge-rel { background: var(--color-background-success); color: var(--color-text-success); }
+  .badge-mkt { background: var(--color-background-warning); color: var(--color-text-warning); }
+  .badge-crm { background: var(--color-background-danger); color: var(--color-text-danger); }
+  .badge-cfg { background: var(--color-background-secondary); color: var(--color-text-secondary); border: 0.5px solid var(--color-border-secondary); }
+  .chevron { font-size: 14px; color: var(--color-text-tertiary); transition: transform 0.2s; }
+  .chevron.open { transform: rotate(90deg); }
+  .children { display: none; padding: 6px 0 2px 38px; }
+  .children.open { display: block; }
+  .child { display: flex; align-items: flex-start; gap: 8px; padding: 5px 10px; border-radius: var(--border-radius-md); font-size: 13px; color: var(--color-text-secondary); cursor: pointer; }
+  .child:hover { background: var(--color-background-secondary); color: var(--color-text-primary); }
+  .child i { font-size: 14px; margin-top: 1px; flex-shrink: 0; }
+  .child-label { flex: 1; }
+  .child-note { font-size: 11px; color: var(--color-text-tertiary); margin-top: 1px; }
+  .child-tag { font-size: 10px; padding: 1px 6px; border-radius: 10px; background: var(--color-background-warning); color: var(--color-text-warning); align-self: center; flex-shrink: 0; }
+  .divider { border: none; border-top: 0.5px solid var(--color-border-tertiary); margin: 8px 0; }
+  .legend { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px; }
+  .leg-item { display: flex; align-items: center; gap: 5px; font-size: 12px; color: var(--color-text-secondary); }
+  .leg-dot { width: 8px; height: 8px; border-radius: 50%; }
+  .merged-note { font-size: 12px; color: var(--color-text-tertiary); background: var(--color-background-secondary); border-left: 2px solid var(--color-border-info); padding: 6px 10px; border-radius: 0 var(--border-radius-md) var(--border-radius-md) 0; margin-bottom: 16px; }
+</style>
+<div class="wrap">
+  <h2 style="sr-only">Site map otimizado — CRM CMX Tecnologia</h2>
+
+  <p class="merged-note"><i class="ti ti-info-circle" aria-hidden="true"></i> Dashboards agrupados em uma seção única de Relatórios & Analytics, com acesso rápido operacional mantido no topo.</p>
+
+  <div class="legend">
+    <div class="leg-item"><div class="leg-dot" style="background:#185FA5"></div> Operacional</div>
+    <div class="leg-item"><div class="leg-dot" style="background:#3B6D11"></div> Relatórios</div>
+    <div class="leg-item"><div class="leg-dot" style="background:#BA7517"></div> Marketing / Envios</div>
+    <div class="leg-item"><div class="leg-dot" style="background:#A32D2D"></div> CRM / Vendas</div>
+    <div class="leg-item"><div class="leg-dot" style="background:#888780"></div> Configurações</div>
+  </div>
+
+  <!-- 1. Atendimento -->
+  <div class="section">
+    <div class="section-header" onclick="toggle(this)">
+      <i class="ti ti-messages section-icon" aria-hidden="true"></i>
+      <span class="section-title">Atendimento</span>
+      <span class="section-badge badge-op">Operacional</span>
+      <i class="ti ti-chevron-right chevron"></i>
+    </div>
+    <div class="children">
+      <div class="child"><i class="ti ti-message-circle"></i><div><div class="child-label">Chat ao vivo</div><div class="child-note">Tela operacional do agente</div></div></div>
+      <div class="child"><i class="ti ti-activity"></i><div><div class="child-label">Monitoramento ao vivo</div><div class="child-note">Supervisão em tempo real</div></div></div>
+      <div class="child"><i class="ti ti-history"></i><div><div class="child-label">Consulta de atendimentos</div><div class="child-note">Histórico e busca</div></div></div>
+    </div>
+  </div>
+
+  <!-- 2. Relatórios & Analytics -->
+  <div class="section">
+    <div class="section-header" onclick="toggle(this)">
+      <i class="ti ti-chart-bar section-icon" aria-hidden="true"></i>
+      <span class="section-title">Relatórios & Analytics</span>
+      <span class="section-badge badge-rel">Relatórios</span>
+      <i class="ti ti-chevron-right chevron"></i>
+    </div>
+    <div class="children">
+      <div class="child"><i class="ti ti-layout-dashboard"></i><div><div class="child-label">Dashboard de atendimento</div><div class="child-note">Gráficos gerais e por operador</div></div></div>
+      <div class="child"><i class="ti ti-users"></i><div><div class="child-label">Dashboard de contatos</div></div></div>
+      <div class="child"><i class="ti ti-currency-dollar"></i><div><div class="child-label">Dashboard de vendas</div></div></div>
+      <div class="child"><i class="ti ti-target"></i><div><div class="child-label">Dashboard de oportunidades</div></div></div>
+      <hr class="divider">
+      <div class="child"><i class="ti ti-user-check"></i><div><div class="child-label">Resumo por usuário</div></div></div>
+      <div class="child"><i class="ti ti-clock"></i><div><div class="child-label">SLA</div></div></div>
+      <div class="child"><i class="ti ti-phone"></i><div><div class="child-label">Relatórios de chamadas</div></div></div>
+      <div class="child"><i class="ti ti-star"></i><div><div class="child-label">Pesquisa de satisfação (CSAT)</div></div></div>
+      <div class="child"><i class="ti ti-calendar-event"></i><div><div class="child-label">Mensagens agendadas</div></div></div>
+      <div class="child"><i class="ti ti-shield"></i><div><div class="child-label">Auditoria</div></div></div>
+      <div class="child"><i class="ti ti-brain"></i><div><div class="child-label">Créditos IA</div></div></div>
+    </div>
+  </div>
+
+  <!-- 3. Envios & Campanhas -->
+  <div class="section">
+    <div class="section-header" onclick="toggle(this)">
+      <i class="ti ti-send section-icon" aria-hidden="true"></i>
+      <span class="section-title">Envios & Campanhas</span>
+      <span class="section-badge badge-mkt">Marketing</span>
+      <i class="ti ti-chevron-right chevron"></i>
+    </div>
+    <div class="children">
+      <div class="child"><i class="ti ti-speakerphone"></i><div><div class="child-label">Campanhas</div></div><span class="child-tag">BETA</span></div>
+      <div class="child"><i class="ti ti-filter"></i><div><div class="child-label">Funil de mensagens</div></div></div>
+      <div class="child"><i class="ti ti-device-mobile"></i><div><div class="child-label">Envio de push</div></div></div>
+    </div>
+  </div>
+
+  <!-- 4. CRM & Vendas -->
+  <div class="section">
+    <div class="section-header" onclick="toggle(this)">
+      <i class="ti ti-briefcase section-icon" aria-hidden="true"></i>
+      <span class="section-title">CRM & Vendas</span>
+      <span class="section-badge badge-crm">Vendas</span>
+      <i class="ti ti-chevron-right chevron"></i>
+    </div>
+    <div class="children">
+      <div class="child"><i class="ti ti-address-book"></i><div><div class="child-label">Contatos</div></div></div>
+      <div class="child"><i class="ti ti-users-group"></i><div><div class="child-label">Gestão de clientes</div></div></div>
+      <div class="child"><i class="ti ti-layout-kanban"></i><div><div class="child-label">Pipeline</div></div></div>
+      <div class="child"><i class="ti ti-checklist"></i><div><div class="child-label">Tarefas</div></div></div>
+    </div>
+  </div>
+
+  <!-- 5. Canais & Automações -->
+  <div class="section">
+    <div class="section-header" onclick="toggle(this)">
+      <i class="ti ti-plug section-icon" aria-hidden="true"></i>
+      <span class="section-title">Canais & Automações</span>
+      <span class="section-badge badge-op">Operacional</span>
+      <i class="ti ti-chevron-right chevron"></i>
+    </div>
+    <div class="children">
+      <div class="child"><i class="ti ti-plug-connected"></i><div><div class="child-label">Canais</div><div class="child-note">WhatsApp, Instagram, etc.</div></div></div>
+      <div class="child"><i class="ti ti-robot"></i><div><div class="child-label">Chatbot</div></div></div>
+    </div>
+  </div>
+
+  <!-- 6. Configurações -->
+  <div class="section">
+    <div class="section-header" onclick="toggle(this)">
+      <i class="ti ti-settings section-icon" aria-hidden="true"></i>
+      <span class="section-title">Configurações</span>
+      <span class="section-badge badge-cfg">Sistema</span>
+      <i class="ti ti-chevron-right chevron"></i>
+    </div>
+    <div class="children">
+      <div class="child" style="font-size:12px; color:var(--color-text-tertiary); font-weight:500; padding-bottom:2px;">Atendimento</div>
+      <div class="child"><i class="ti ti-plug"></i><div><div class="child-label">Plug-in</div></div></div>
+      <div class="child"><i class="ti ti-message-bolt"></i><div><div class="child-label">Mensagens rápidas</div></div></div>
+      <div class="child"><i class="ti ti-tag"></i><div><div class="child-label">Etiquetas</div></div></div>
+      <div class="child"><i class="ti ti-door-exit"></i><div><div class="child-label">Motivos de fechamento</div></div></div>
+      <div class="child"><i class="ti ti-template"></i><div><div class="child-label">Templates</div></div></div>
+      <hr class="divider">
+      <div class="child" style="font-size:12px; color:var(--color-text-tertiary); font-weight:500; padding-bottom:2px;">Vendas</div>
+      <div class="child"><i class="ti ti-tag"></i><div><div class="child-label">Status cliente / Origens do lead</div></div></div>
+      <div class="child"><i class="ti ti-layout-kanban"></i><div><div class="child-label">Gerenciar pipelines</div></div></div>
+      <div class="child"><i class="ti ti-package"></i><div><div class="child-label">Produtos</div></div></div>
+      <div class="child"><i class="ti ti-chart-arrows"></i><div><div class="child-label">Metas & Motivos de perdas</div></div></div>
+      <hr class="divider">
+      <div class="child" style="font-size:12px; color:var(--color-text-tertiary); font-weight:500; padding-bottom:2px;">Cadastros</div>
+      <div class="child"><i class="ti ti-users"></i><div><div class="child-label">Usuários & Departamentos</div></div></div>
+      <div class="child"><i class="ti ti-list-details"></i><div><div class="child-label">Campos customizados</div></div></div>
+      <div class="child"><i class="ti ti-id-badge"></i><div><div class="child-label">Perfil & Avaliação</div></div></div>
+      <hr class="divider">
+      <div class="child" style="font-size:12px; color:var(--color-text-tertiary); font-weight:500; padding-bottom:2px;">Avançado</div>
+      <div class="child"><i class="ti ti-clock"></i><div><div class="child-label">Horário de atendimento & Feriados</div></div></div>
+      <div class="child"><i class="ti ti-code"></i><div><div class="child-label">API / Webhook</div></div></div>
+      <div class="child"><i class="ti ti-settings-2"></i><div><div class="child-label">Configurações avançadas & Prompts</div></div></div>
+      <div class="child"><i class="ti ti-phone-call"></i><div><div class="child-label">VoIP</div></div></div>
+      <div class="child"><i class="ti ti-shield-lock"></i><div><div class="child-label">Controle de acesso por IP</div></div></div>
+    </div>
+  </div>
+</div>
+
+<script>
+function toggle(header) {
+  const chevron = header.querySelector('.chevron');
+  const children = header.nextElementSibling;
+  chevron.classList.toggle('open');
+  children.classList.toggle('open');
+}
+</script>
