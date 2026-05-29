@@ -1,4 +1,9 @@
 import { ControladoriaSidebar } from "@/components/controladoria-sidebar";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "LegalTech - Controladoria",
+};
 
 export default function ControladoriaLayout({
   children,

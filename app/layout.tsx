@@ -16,7 +16,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "CMX Platform - Gestao Empresarial",
+  title: "LegalTech - Início",
   description: "Plataforma integrada de CRM, ERP e Controladoria",
 };
 

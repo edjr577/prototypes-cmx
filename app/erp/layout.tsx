@@ -1,4 +1,9 @@
 import { ERPSidebar } from "@/components/erp-sidebar";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "LegalTech - ERP",
+};
 
 export default function ERPLayout({ children }: { children: React.ReactNode }) {
   return (
