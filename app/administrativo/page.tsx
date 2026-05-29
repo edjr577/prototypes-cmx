@@ -454,7 +454,7 @@ export default function CEODashboard() {
                         contentStyle={{ backgroundColor: 'var(--color-popover)', borderColor: 'var(--color-border)', borderRadius: 'var(--radius)' }} 
                       />
                       <Bar dataKey="receita" fill="var(--color-chart-1)" radius={[4, 4, 0, 0]} maxBarSize={40}>
-                        <LabelList dataKey="receita" position="top" fill="var(--color-foreground)" fontSize={9} fontWeight={600} formatter={(v: number) => v >= 1000000 ? `${(v/1000000).toFixed(1)}M` : `${v/1000}k`} />
+                        <LabelList dataKey="receita" position="top" fill="var(--color-foreground)" fontSize={9} fontWeight={600} formatter={(v: any) => v >= 1000000 ? `${(v/1000000).toFixed(1)}M` : `${v/1000}k`} />
                       </Bar>
                     </BarChart>
                   </ResponsiveContainer>
