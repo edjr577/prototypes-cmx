@@ -2,10 +2,10 @@ import { Sidebar } from "@/components/sidebar";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "LegalTech - ERP",
+  title: "LegalTech - Administrativo",
 };
 
-export default function ERPLayout({ children }: { children: React.ReactNode }) {
+export default function CEOLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="flex bg-background h-[calc(100vh-3.5rem)] overflow-hidden">
       <Sidebar />

@@ -4,7 +4,7 @@ import React, { createContext, useContext, useState, useEffect, ReactNode } from
 
 // Types for roles and apps
 export type Role = 'Sócio' | 'Advogado' | 'Controller' | 'Estagiário' | 'Cliente';
-export type AppKey = 'crm' | 'erp' | 'controladoria';
+export type AppKey = 'administrativo' | 'crm' | 'erp' | 'controladoria';
 
 export interface Tenant {
   id: string;
@@ -42,7 +42,7 @@ const UserContext = createContext<UserContextProps | undefined>(undefined);
 
 export const UserProvider = ({ children }: { children: ReactNode }) => {
   const [role, setRoleState] = useState<Role>('Sócio');
-  const [enabledApps, setEnabledAppsState] = useState<AppKey[]>(['crm', 'erp', 'controladoria']);
+  const [enabledApps, setEnabledAppsState] = useState<AppKey[]>(['administrativo', 'crm', 'erp', 'controladoria']);
   const [hasChosenProfile, setHasChosenProfileState] = useState<boolean>(false);
   const [activeTenant, setActiveTenantState] = useState<Tenant>(defaultTenants[0]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -61,7 +61,9 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
         setRoleState(storedRole);
       }
       if (storedAppsStr) {
-        setEnabledAppsState(JSON.parse(storedAppsStr));
+        const parsedApps = JSON.parse(storedAppsStr);
+        if (!parsedApps.includes('administrativo')) parsedApps.push('administrativo');
+        setEnabledAppsState(parsedApps);
       }
       if (storedHasChosen) {
         setHasChosenProfileState(storedHasChosen === 'true');
@@ -119,7 +121,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
 
   const reset = () => {
     setRole('Sócio');
-    setEnabledApps(['crm', 'erp', 'controladoria']);
+    setEnabledApps(['administrativo', 'crm', 'erp', 'controladoria']);
     setHasChosenProfile(false);
     setActiveTenantState(defaultTenants[0]);
     setIsLoading(false);
