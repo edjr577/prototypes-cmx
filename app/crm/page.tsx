@@ -291,17 +291,17 @@ export default function CRMPage() {
           const Icon = item.icon;
           return (
             <Card key={item.label} className="overflow-hidden">
-              <CardHeader className="flex flex-row items-center justify-between pb-2">
-                <CardTitle className="text-2xs font-semibold uppercase tracking-wider text-muted-foreground">
-                  {item.label}
-                </CardTitle>
-                <div className={`rounded-lg p-1.5 bg-muted ${item.color}`}>
-                  <Icon className="size-4" />
+              <CardContent className="px-4 py-0 flex flex-col gap-2">
+                <div className="flex flex-row items-center justify-between">
+                  <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
+                    {item.label}
+                  </span>
+                  <div className={`rounded-lg p-1.5 bg-muted ${item.color}`}>
+                    <Icon className="size-4" />
+                  </div>
                 </div>
-              </CardHeader>
-              <CardContent>
                 <div className="text-2xl font-bold tracking-tight text-foreground">{item.value}</div>
-                <p className="mt-1 text-2xs text-muted-foreground/80">{item.change}</p>
+                <div className="text-xs text-muted-foreground/80">{item.change}</div>
               </CardContent>
             </Card>
           );
@@ -368,9 +368,10 @@ export default function CRMPage() {
                   axisLine={false}
                   tickLine={false}
                   width={100}
-                  style={{ fontSize: "11px", fill: "oklch(var(--muted-foreground))" }}
+                  style={{ fontSize: "11px", fill: "var(--muted-foreground)" }}
                 />
                 <Tooltip
+                  cursor={{ fill: "var(--muted)" }}
                   contentStyle={{
                     backgroundColor: "var(--card)",
                     borderColor: "var(--border)",
@@ -407,6 +408,7 @@ export default function CRMPage() {
                   style={{ fontSize: "11px", fill: "var(--muted-foreground)" }}
                 />
                 <Tooltip
+                  cursor={{ fill: "var(--muted)" }}
                   contentStyle={{
                     backgroundColor: "var(--card)",
                     borderColor: "var(--border)",
@@ -531,6 +533,7 @@ export default function CRMPage() {
                   style={{ fontSize: "11px", fill: "var(--muted-foreground)" }}
                 />
                 <Tooltip
+                  cursor={{ fill: "var(--muted)" }}
                   contentStyle={{
                     backgroundColor: "var(--card)",
                     borderColor: "var(--border)",
@@ -566,6 +569,7 @@ export default function CRMPage() {
                   style={{ fontSize: "11px", fill: "var(--muted-foreground)" }}
                 />
                 <Tooltip
+                  cursor={{ fill: "var(--muted)" }}
                   contentStyle={{
                     backgroundColor: "var(--card)",
                     borderColor: "var(--border)",

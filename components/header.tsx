@@ -29,7 +29,8 @@ import {
   Home,
   LifeBuoy,
   Fingerprint,
-  Check
+  Check,
+  TrendingUp
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -45,6 +46,14 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useUser, AppKey } from "@/app/context/UserContext";
 
 const allModules = [
+  {
+    key: "administrativo" as AppKey,
+    name: "Administrativo",
+    description: "Visão executiva e resultados",
+    href: "/administrativo",
+    icon: TrendingUp,
+    color: "bg-indigo-600",
+  },
   {
     key: "crm" as AppKey,
     name: "CRM",
@@ -232,7 +241,12 @@ export function Header() {
                 
                 <li className="flex items-center">
                   <span role="link" aria-disabled="true" aria-current="page" className="font-normal text-foreground">
-                    Dashboard
+                    {pathname === "/administrativo" ? "Visão Geral" : 
+                     pathname === "/administrativo/ia" ? "Assistência com IA" :
+                     pathname === "/administrativo/plano" ? "Gerenciar Plano" :
+                     pathname === "/administrativo/configuracoes" ? "Configurações" :
+                     pathname === "/crm" || pathname === "/erp" || pathname === "/controladoria" ? "Visão Geral" : 
+                     "Dashboard"}
                   </span>
                 </li>
               </ol>
