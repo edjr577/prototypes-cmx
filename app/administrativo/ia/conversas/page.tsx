@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useUser } from "@/app/context/UserContext";
 import { Button } from "@/components/ui/button";
@@ -45,7 +45,7 @@ const MOCK_HISTORY: ChatHistory[] = [
   }
 ];
 
-export default function IAConversasPage() {
+function IAConversasContent() {
   const { activeTenant } = useUser();
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -321,5 +321,13 @@ export default function IAConversasPage() {
         }
       `}} />
     </div>
+  );
+}
+
+export default function IAConversasPage() {
+  return (
+    <Suspense fallback={<div className="flex h-full items-center justify-center text-muted-foreground text-sm animate-pulse">Carregando histórico...</div>}>
+      <IAConversasContent />
+    </Suspense>
   );
 }
