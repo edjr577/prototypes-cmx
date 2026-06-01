@@ -322,23 +322,40 @@ const controladoriaMenuData: MenuSection[] = [
 export function Sidebar() {
   const pathname = usePathname();
   const router = useRouter();
-  const { tenants, activeTenant, setActiveTenantById, setIsLoading, setLoadingModuleName } = useUser();
+  const { tenants, activeTenant, setActiveTenantById, setIsLoading, setLoadingModuleName, hasPermission } = useUser();
   const [isModelosOpen, setModelosOpen] = React.useState(false);
   const [isCollapsed, setIsCollapsed] = React.useState(false);
   
-  // Determine which menu data to use based on pathname
+  // Determine which menu data to use based on pathname and permissions
   let menuData = ceoMenuData;
   let defaultOpenSections: Record<string, boolean> = { assistencia_ia: true };
 
   if (pathname.startsWith("/crm")) {
-    menuData = crmMenuData;
+    menuData = crmMenuData.filter(section => {
+      if (['campanhas', 'vendas'].includes(section.id)) return hasPermission('crm:edit') || hasPermission('crm:admin');
+      if (['automacoes', 'configuracoes'].includes(section.id)) return hasPermission('crm:admin');
+      return true;
+    });
     defaultOpenSections = { atendimento: true, relatorios: true };
   } else if (pathname.startsWith("/erp")) {
-    menuData = erpMenuData;
+    menuData = erpMenuData.filter(section => {
+      if (['financeiro', 'crm', 'produtividade'].includes(section.id)) return hasPermission('erp:edit') || hasPermission('erp:admin');
+      if (['configuracoes'].includes(section.id)) return hasPermission('erp:admin');
+      return true;
+    });
     defaultOpenSections = { dashboard: true, contencioso: true };
   } else if (pathname.startsWith("/controladoria")) {
-    menuData = controladoriaMenuData;
+    menuData = controladoriaMenuData.filter(section => {
+      if (['trabalho'].includes(section.id)) return hasPermission('controladoria:edit') || hasPermission('controladoria:admin');
+      if (['financeiro', 'compliance', 'configuracoes'].includes(section.id)) return hasPermission('controladoria:admin');
+      return true;
+    });
     defaultOpenSections = { inicio: true, trabalho: true };
+  } else {
+    menuData = ceoMenuData.filter(section => {
+      if (section.id === 'configuracoes') return hasPermission('admin:office_edit') || hasPermission('admin:full_access');
+      return true;
+    });
   }
   
   const [openSections, setOpenSections] = React.useState<Record<string, boolean>>(defaultOpenSections);

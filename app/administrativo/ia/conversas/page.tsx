@@ -9,6 +9,8 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Send, Bot, User, MessageSquare, Plus, Mic, Search, Trash2, Edit2 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { PermissionGate } from "@/components/permission-gate";
+import { UpsellBanner } from "@/components/upsell-banner";
 
 // Tipos para simular as conversas
 type Message = { id: number; role: "user" | "assistant"; content: string };
@@ -134,7 +136,7 @@ function IAConversasContent() {
   };
 
   return (
-    <div className="flex flex-col lg:flex-row gap-6 h-full max-h-[calc(100vh-6rem)]">
+    <div className="flex flex-col lg:flex-row gap-6 h-full max-h-[calc(100vh-6rem)] p-6">
       
       {/* ========================================== */}
       {/* LEFT SIDEBAR: Histórico de Conversas        */}
@@ -326,8 +328,10 @@ function IAConversasContent() {
 
 export default function IAConversasPage() {
   return (
-    <Suspense fallback={<div className="flex h-full items-center justify-center text-muted-foreground text-sm animate-pulse">Carregando histórico...</div>}>
-      <IAConversasContent />
-    </Suspense>
+    <PermissionGate require="admin:full_access" fallback={<UpsellBanner />} blockMode="overlay">
+      <Suspense fallback={<div className="flex h-full items-center justify-center text-muted-foreground text-sm animate-pulse">Carregando histórico...</div>}>
+        <IAConversasContent />
+      </Suspense>
+    </PermissionGate>
   );
 }

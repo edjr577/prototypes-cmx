@@ -2,7 +2,8 @@
 
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { useUser, Role, AppKey } from '@/app/context/UserContext';
+import { useUser } from '@/app/context/UserContext';
+import { Plan, Role, AppKey, resolvePermissions } from '@/lib/permissions';
 import { 
   ShieldAlert, 
   Briefcase, 
@@ -30,27 +31,32 @@ export default function ProfileSelectionPage() {
     role, 
     setRole, 
     enabledApps, 
-    setEnabledApps, 
+    plan,
+    setPlan, 
     hasChosenProfile, 
     setHasChosenProfile,
-    isInitialized 
+    isInitialized,
+    hasPermission
   } = useUser();
 
   const [localRole, setLocalRole] = useState<Role>('Sócio');
-  const [localApps, setLocalApps] = useState<AppKey[]>(['crm', 'erp', 'controladoria']);
+  const [localPlan, setLocalPlan] = useState<Plan>('Advanced');
 
   // Sync state once initialized
   useEffect(() => {
     if (isInitialized) {
       setLocalRole(role);
-      setLocalApps(enabledApps);
+      setLocalPlan(plan);
       
       // Auto-redirect if they already chose and have active modules
       if (hasChosenProfile && enabledApps.length > 0) {
-        router.push(`/${enabledApps[0]}`);
+        if (hasPermission('admin:view')) router.push('/administrativo');
+        else if (hasPermission('crm:view')) router.push('/crm');
+        else if (hasPermission('erp:view')) router.push('/erp');
+        else if (hasPermission('controladoria:view')) router.push('/controladoria');
       }
     }
-  }, [isInitialized, hasChosenProfile, enabledApps, role, router]);
+  }, [isInitialized, hasChosenProfile, enabledApps, role, router, hasPermission]);
 
   if (!isInitialized) {
     return (
@@ -69,77 +75,87 @@ export default function ProfileSelectionPage() {
       desc: 'Sócio-Diretor / Administrador', 
       icon: ShieldAlert, 
       color: 'border-red-500/20 text-red-500 bg-red-500/5 hover:border-red-500/40',
-      access: 'Acesso total e irrestrito a todos os módulos, relatórios financeiros e configurações.'
+      access: 'Acesso total aos módulos do plano (admin:full_access no Advanced).'
+    },
+    { 
+      name: 'Líder CRM', 
+      desc: 'Gestor de Vendas / Líder CRM', 
+      icon: Users, 
+      color: 'border-indigo-500/20 text-indigo-500 bg-indigo-500/5 hover:border-indigo-500/40',
+      access: 'Acesso total de gestão (admin) apenas no módulo de CRM.'
     },
     { 
       name: 'Advogado', 
       desc: 'Advogado Associado / Parceiro', 
       icon: Briefcase, 
       color: 'border-blue-500/20 text-blue-500 bg-blue-500/5 hover:border-blue-500/40',
-      access: 'Visualização de processos vinculados e gestão de leads correspondentes no CRM.'
+      access: 'Visualização de processos (erp) e edição. Acesso básico de visualização no CRM.'
     },
     { 
       name: 'Controller', 
       desc: 'Controlador Financeiro / Administrativo', 
       icon: TrendingUp, 
       color: 'border-emerald-500/20 text-emerald-500 bg-emerald-500/5 hover:border-emerald-500/40',
-      access: 'Foco em faturamento, relatórios de produtividade e módulo de Controladoria.'
+      access: 'Gestão total de relatórios de produtividade e módulo de Controladoria.'
     },
     { 
       name: 'Estagiário', 
       desc: 'Assistente / Estagiário', 
       icon: HelpCircle, 
       color: 'border-amber-500/20 text-amber-500 bg-amber-500/5 hover:border-amber-500/40',
-      access: 'Auxílio operacional no ERP e CRM, com restrições severas em relatórios e exclusões.'
+      access: 'Visualização básica no ERP e CRM, com restrições severas em relatórios.'
     },
     { 
       name: 'Cliente', 
       desc: 'Cliente do Escritório (Portal Externo)', 
       icon: UserCheck, 
       color: 'border-purple-500/20 text-purple-500 bg-purple-500/5 hover:border-purple-500/40',
-      access: 'Visualização simplificada de andamentos processuais e comunicados direcionados.'
+      access: 'Visualização simplificada de andamentos processuais (erp).'
     },
   ];
 
-  const appsConfig: { key: AppKey; name: string; desc: string; icon: any; color: string }[] = [
+  const plansConfig: { key: Plan; name: string; desc: string; icon: any; color: string }[] = [
     {
-      key: 'crm',
-      name: 'CRM Legal',
-      desc: 'Gestão de leads jurídicos, funil de prospecção e novos clientes.',
+      key: 'Starter',
+      name: 'Plano Starter',
+      desc: 'Gestão Básica (CRM + Administrativo Bloqueado)',
       icon: Users,
+      color: 'peer-checked:border-slate-500 peer-checked:bg-slate-500/5 border-border hover:border-slate-500/30'
+    },
+    {
+      key: 'Growth',
+      name: 'Plano Growth',
+      desc: 'Gestão Financeira (+ Controladoria)',
+      icon: PieChart,
       color: 'peer-checked:border-blue-500 peer-checked:bg-blue-500/5 border-border hover:border-blue-500/30'
     },
     {
-      key: 'erp',
-      name: 'ERP / Processos',
-      desc: 'Controle de processos judiciais, andamentos, prazos e tarefas.',
+      key: 'Growth+',
+      name: 'Plano Growth+',
+      desc: 'Gestão Jurídica Total (+ ERP/Processos)',
       icon: Package,
-      color: 'peer-checked:border-emerald-500 peer-checked:bg-emerald-500/5 border-border hover:border-emerald-500/30'
+      color: 'peer-checked:border-indigo-500 peer-checked:bg-indigo-500/5 border-border hover:border-indigo-500/30'
     },
     {
-      key: 'controladoria',
-      name: 'Controladoria',
-      desc: 'Dashboard financeiro, faturamento de honorários e relatórios.',
-      icon: PieChart,
+      key: 'Advanced',
+      name: 'Plano Advanced',
+      desc: 'Gestão Completa (Administrativo Desbloqueado)',
+      icon: Sparkles,
       color: 'peer-checked:border-amber-500 peer-checked:bg-amber-500/5 border-border hover:border-amber-500/30'
     }
   ];
 
-  const handleToggleApp = (appKey: AppKey) => {
-    setLocalApps(prev =>
-      prev.includes(appKey) ? prev.filter(k => k !== appKey) : [...prev, appKey]
-    );
-  };
-
   const handleConfirm = () => {
     setRole(localRole);
-    setEnabledApps(localApps);
+    setPlan(localPlan);
     setHasChosenProfile(true);
     
-    // Route to the first enabled module, or stay if none enabled
-    if (localApps.length > 0) {
-      router.push(`/${localApps[0]}`);
-    }
+    // Route to the first allowed dashboard
+    const tempPerms = resolvePermissions(localRole, localPlan);
+    if (tempPerms.includes('admin:view')) router.push('/administrativo');
+    else if (tempPerms.includes('crm:view')) router.push('/crm');
+    else if (tempPerms.includes('erp:view')) router.push('/erp');
+    else if (tempPerms.includes('controladoria:view')) router.push('/controladoria');
   };
 
   return (
@@ -207,22 +223,22 @@ export default function ProfileSelectionPage() {
               </p>
 
               <div className="flex flex-col gap-3">
-                {appsConfig.map((app) => {
-                  const AppIcon = app.icon;
-                  const isChecked = localApps.includes(app.key);
+                {plansConfig.map((p) => {
+                  const PlanIcon = p.icon;
+                  const isChecked = localPlan === p.key;
                   return (
                     <label 
-                      key={app.key}
-                      onClick={() => handleToggleApp(app.key)}
-                      className={`relative flex items-start gap-3 rounded-lg border p-3.5 cursor-pointer transition-all select-none ${app.color} ${isChecked ? 'border-primary/40 bg-accent/30' : 'border-border/60 bg-background/50 hover:bg-accent/10'}`}
+                      key={p.key}
+                      onClick={() => setLocalPlan(p.key)}
+                      className={`relative flex items-start gap-3 rounded-lg border p-3.5 cursor-pointer transition-all select-none ${p.color} ${isChecked ? 'border-primary/40 bg-accent/30' : 'border-border/60 bg-background/50 hover:bg-accent/10'}`}
                     >
                       <div className={`mt-0.5 flex size-8 items-center justify-center rounded-lg border ${isChecked ? 'bg-primary/10 text-primary border-primary/20' : 'bg-muted text-muted-foreground'}`}>
-                        <AppIcon className="size-4.5" />
+                        <PlanIcon className="size-4.5" />
                       </div>
                       <div className="flex-1 min-w-0 pr-6">
-                        <span className="text-xs font-bold text-foreground block">{app.name}</span>
+                        <span className="text-xs font-bold text-foreground block">{p.name}</span>
                         <span className="text-[10px] text-muted-foreground leading-tight mt-0.5 block">
-                          {app.desc}
+                          {p.desc}
                         </span>
                       </div>
                       <div className="absolute right-3.5 top-1/2 -translate-y-1/2">
@@ -291,17 +307,11 @@ export default function ProfileSelectionPage() {
             <div className="mt-6 pt-4 border-t border-border/55">
               <Button 
                 onClick={handleConfirm}
-                disabled={localApps.length === 0}
                 className="w-full gap-2 h-10 font-medium rounded-lg text-xs"
               >
                 Confirmar e Entrar no Painel
                 <ArrowRight className="size-4.5" />
               </Button>
-              {localApps.length === 0 && (
-                <p className="text-[10px] text-destructive text-center mt-2">
-                  Selecione ao menos um módulo ativo para entrar no painel.
-                </p>
-              )}
             </div>
 
           </div>

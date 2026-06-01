@@ -5,12 +5,14 @@ import {
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, 
   PieChart, Pie, Cell, BarChart, Bar, LabelList
 } from "recharts";
-import { ArrowUp, ArrowDown, Calendar as CalendarIcon, Filter, CheckCircle2 } from "lucide-react";
+import { ArrowUp, ArrowDown, Calendar as CalendarIcon, Filter, CheckCircle2, Lock, Sparkles } from "lucide-react";
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
+import { PermissionGate } from "@/components/permission-gate";
+import { UpsellBanner } from "@/components/upsell-banner";
 import {
   Select,
   SelectContent,
@@ -107,8 +109,13 @@ export default function CEODashboard() {
   const { activeTenant } = useUser();
 
   return (
-    <div className="flex flex-col space-y-2">
-      {/* HEADER SECTION */}
+    <PermissionGate 
+      require="admin:full_access"
+      fallback={<UpsellBanner />}
+      blockMode="overlay"
+    >
+      <div className="flex flex-col space-y-2 p-6">
+        {/* HEADER SECTION */}
       <div className="flex flex-col space-y-1.5 mb-2">
         <p className="text-xs font-bold tracking-widest text-muted-foreground uppercase">Visão Executiva</p>
         <div className="flex items-center gap-3">
@@ -697,6 +704,7 @@ export default function CEODashboard() {
           </div>
         </TabsContent>
       </Tabs>
-    </div>
+      </div>
+    </PermissionGate>
   );
 }

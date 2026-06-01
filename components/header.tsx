@@ -43,7 +43,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { useUser, AppKey } from "@/app/context/UserContext";
+import { useUser } from "@/app/context/UserContext";
+import { AppKey } from "@/lib/permissions";
 
 const allModules = [
   {
@@ -87,6 +88,7 @@ export function Header() {
   const { 
     role, 
     enabledApps, 
+    hasPermission,
     reset, 
     setHasChosenProfile, 
     tenants, 
@@ -115,8 +117,16 @@ export function Header() {
     }, 100);
   };
   
+  const hasModuleAccess = (key: AppKey) => {
+    if (key === 'crm') return hasPermission('crm:view');
+    if (key === 'erp') return hasPermission('erp:view');
+    if (key === 'controladoria') return hasPermission('controladoria:view');
+    if (key === 'administrativo') return hasPermission('admin:view');
+    return false;
+  };
+
   // Filter active modules
-  const activeModules = allModules.filter(m => enabledApps.includes(m.key));
+  const activeModules = allModules.filter(m => enabledApps.includes(m.key) && hasModuleAccess(m.key));
   const currentModule = allModules.find((m) => pathname.startsWith(m.href));
   const isCRM = pathname.startsWith("/crm");
 

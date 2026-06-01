@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { X, Search, Plus, Scale, FileText, Briefcase, Calculator, Heart, Stethoscope, Dumbbell, Utensils } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { PermissionGate } from "@/components/permission-gate";
+import { UpsellBanner } from "@/components/upsell-banner";
 
 interface ModelosProntosModalProps {
   isOpen: boolean;
@@ -91,14 +93,15 @@ export function ModelosProntosModal({ isOpen, onClose }: ModelosProntosModalProp
   });
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background/80 backdrop-blur-sm animate-in fade-in duration-200">
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-background/98 backdrop-blur-md animate-in fade-in duration-200">
       {/* Clique fora para fechar */}
       <div className="absolute inset-0" onClick={onClose} />
       
       {/* Conteúdo do Modal */}
       <div className="relative flex flex-col bg-card border border-border/50 rounded-2xl shadow-2xl w-full max-w-6xl max-h-[90vh] overflow-hidden flex-1 z-10 text-card-foreground">
-        
-        {/* HEADER */}
+        <PermissionGate require="admin:full_access" fallback={<UpsellBanner />} blockMode="overlay">
+          <div className="flex flex-col h-full w-full">
+            {/* HEADER */}
         <div className="flex items-center justify-between p-5 border-b border-border/30">
           <div className="flex items-center gap-2">
             <h2 className="text-xl font-bold tracking-tight">Modelos Prontos</h2>
@@ -227,7 +230,9 @@ export function ModelosProntosModal({ isOpen, onClose }: ModelosProntosModalProp
               </div>
             )}
           </div>
+          </div>
         </div>
+        </PermissionGate>
       </div>
     </div>
   );

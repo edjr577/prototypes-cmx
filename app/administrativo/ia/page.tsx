@@ -9,6 +9,8 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Sparkles, Send, Bot, User, ArrowRight, Lightbulb, FileText, TrendingUp, ShieldAlert, Plus, Mic } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
+import { PermissionGate } from "@/components/permission-gate";
+import { UpsellBanner } from "@/components/upsell-banner";
 
 // Mock das ações sugeridas
 const suggestedActions = [
@@ -70,55 +72,57 @@ export default function IANewChatPage() {
   };
 
   return (
-    <div className="flex flex-col h-full max-h-[calc(100vh-8rem)]">
-      {/* INITIAL STATE: Centered Input & Badges (Gemini Style) */}
-      <div className="flex flex-col items-center justify-center flex-1 min-h-0 px-4 pb-20 mt-[-5rem]">
-        <h2 className="text-[2.2rem] font-normal mb-8 text-center text-foreground tracking-tight">
-          Como posso ajudar hoje?
-        </h2>
+    <PermissionGate require="admin:full_access" fallback={<UpsellBanner />} blockMode="overlay">
+      <div className="flex flex-col h-full max-h-[calc(100vh-8rem)] p-6">
+        {/* INITIAL STATE: Centered Input & Badges (Gemini Style) */}
+        <div className="flex flex-col items-center justify-center flex-1 min-h-0 px-4 pb-20 mt-[-5rem]">
+          <h2 className="text-[2.2rem] font-normal mb-8 text-center text-foreground tracking-tight">
+            Como posso ajudar hoje?
+          </h2>
 
-        <div className="w-full max-w-3xl">
-          <form onSubmit={handleSend} className="relative flex items-center bg-muted/40 rounded-full border border-border/40 focus-within:bg-background focus-within:shadow-md focus-within:border-border/80 transition-all mb-8">
-            <button 
-              type="button"
-              className="absolute left-3 size-9 rounded-full hover:bg-muted/60 flex items-center justify-center text-muted-foreground transition-colors cursor-pointer"
-              title="Anexar arquivos"
-            >
-              <Plus className="size-5" />
-            </button>
-            
-            <input
-              type="text"
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              onKeyDown={handleKeyDown}
-              placeholder="Pergunte sobre contratos, financeiro ou peça um resumo..."
-              className="w-full bg-transparent border-none focus:outline-none focus:ring-0 pl-14 pr-14 py-4 text-[15px] shadow-none"
-            />
-            
-            <button 
-              type="button"
-              className="absolute right-3 size-9 rounded-full hover:bg-muted/60 flex items-center justify-center text-muted-foreground transition-colors cursor-pointer"
-              title="Entrada por voz"
-            >
-              <Mic className="size-5" />
-            </button>
-          </form>
-
-          <div className="flex flex-wrap items-center justify-center gap-2.5">
-            {suggestedActions.map((action, i) => (
-              <button
-                key={i}
-                onClick={() => handleSuggestionClick(action.title)}
-                className="flex items-center gap-2 px-3.5 py-2 rounded-full border border-border/40 bg-background/50 hover:bg-muted/60 hover:border-border/60 transition-all text-sm text-muted-foreground hover:text-foreground cursor-pointer shadow-sm"
+          <div className="w-full max-w-3xl">
+            <form onSubmit={handleSend} className="relative flex items-center bg-muted/40 rounded-full border border-border/40 focus-within:bg-background focus-within:shadow-md focus-within:border-border/80 transition-all mb-8">
+              <button 
+                type="button"
+                className="absolute left-3 size-9 rounded-full hover:bg-muted/60 flex items-center justify-center text-muted-foreground transition-colors cursor-pointer"
+                title="Anexar arquivos"
               >
-                <action.icon className={cn("size-3.5", action.color)} />
-                {action.title}
+                <Plus className="size-5" />
               </button>
-            ))}
+              
+              <input
+                type="text"
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                onKeyDown={handleKeyDown}
+                placeholder="Pergunte sobre contratos, financeiro ou peça um resumo..."
+                className="w-full bg-transparent border-none focus:outline-none focus:ring-0 pl-14 pr-14 py-4 text-[15px] shadow-none"
+              />
+              
+              <button 
+                type="button"
+                className="absolute right-3 size-9 rounded-full hover:bg-muted/60 flex items-center justify-center text-muted-foreground transition-colors cursor-pointer"
+                title="Entrada por voz"
+              >
+                <Mic className="size-5" />
+              </button>
+            </form>
+
+            <div className="flex flex-wrap items-center justify-center gap-2.5">
+              {suggestedActions.map((action, i) => (
+                <button
+                  key={i}
+                  onClick={() => handleSuggestionClick(action.title)}
+                  className="flex items-center gap-2 px-3.5 py-2 rounded-full border border-border/40 bg-background/50 hover:bg-muted/60 hover:border-border/60 transition-all text-sm text-muted-foreground hover:text-foreground cursor-pointer shadow-sm"
+                >
+                  <action.icon className={cn("size-3.5", action.color)} />
+                  {action.title}
+                </button>
+              ))}
+            </div>
           </div>
         </div>
       </div>
-    </div>
+    </PermissionGate>
   );
 }

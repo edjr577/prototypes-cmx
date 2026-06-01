@@ -1,10 +1,7 @@
 'use client';
 
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-
-// Types for roles and apps
-export type Role = 'Sócio' | 'Advogado' | 'Controller' | 'Estagiário' | 'Cliente';
-export type AppKey = 'administrativo' | 'crm' | 'erp' | 'controladoria';
+import React, { createContext, useContext, useState, useEffect, ReactNode, useCallback, useMemo } from 'react';
+import { Plan, Role, AppKey, Permission, PlanModules, resolvePermissions } from '@/lib/permissions';
 
 export interface Tenant {
   id: string;
@@ -16,9 +13,11 @@ export interface Tenant {
 interface UserContextProps {
   role: Role;
   setRole: (role: Role) => void;
+  plan: Plan;
+  setPlan: (plan: Plan) => void;
   enabledApps: AppKey[];
-  toggleApp: (app: AppKey) => void;
-  setEnabledApps: (apps: AppKey[]) => void;
+  hasPermission: (permission: Permission) => boolean;
+  
   reset: () => void;
   isInitialized: boolean;
   hasChosenProfile: boolean;
@@ -42,7 +41,7 @@ const UserContext = createContext<UserContextProps | undefined>(undefined);
 
 export const UserProvider = ({ children }: { children: ReactNode }) => {
   const [role, setRoleState] = useState<Role>('Sócio');
-  const [enabledApps, setEnabledAppsState] = useState<AppKey[]>(['administrativo', 'crm', 'erp', 'controladoria']);
+  const [plan, setPlanState] = useState<Plan>('Advanced');
   const [hasChosenProfile, setHasChosenProfileState] = useState<boolean>(false);
   const [activeTenant, setActiveTenantState] = useState<Tenant>(defaultTenants[0]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -50,21 +49,15 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
   const [isInitialized, setIsInitialized] = useState<boolean>(false);
 
   useEffect(() => {
-    // Load from localStorage on mount
     try {
       const storedRole = localStorage.getItem('legaltech_role') as Role;
-      const storedAppsStr = localStorage.getItem('legaltech_enabled_apps');
+      const storedPlan = localStorage.getItem('legaltech_plan') as Plan;
       const storedHasChosen = localStorage.getItem('legaltech_has_chosen');
       const storedTenantId = localStorage.getItem('legaltech_active_tenant_id');
 
-      if (storedRole) {
-        setRoleState(storedRole);
-      }
-      if (storedAppsStr) {
-        const parsedApps = JSON.parse(storedAppsStr);
-        if (!parsedApps.includes('administrativo')) parsedApps.push('administrativo');
-        setEnabledAppsState(parsedApps);
-      }
+      if (storedRole) setRoleState(storedRole);
+      if (storedPlan) setPlanState(storedPlan);
+      
       if (storedHasChosen) {
         setHasChosenProfileState(storedHasChosen === 'true');
       }
@@ -81,35 +74,28 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
     }
   }, []);
 
-  const setRole = (newRole: Role) => {
+  const setRole = useCallback((newRole: Role) => {
     setRoleState(newRole);
     if (typeof window !== 'undefined') {
       localStorage.setItem('legaltech_role', newRole);
     }
-  };
+  }, []);
 
-  const setEnabledApps = (apps: AppKey[]) => {
-    setEnabledAppsState(apps);
+  const setPlan = useCallback((newPlan: Plan) => {
+    setPlanState(newPlan);
     if (typeof window !== 'undefined') {
-      localStorage.setItem('legaltech_enabled_apps', JSON.stringify(apps));
+      localStorage.setItem('legaltech_plan', newPlan);
     }
-  };
+  }, []);
 
-  const toggleApp = (app: AppKey) => {
-    const nextApps = enabledApps.includes(app)
-      ? enabledApps.filter(a => a !== app)
-      : [...enabledApps, app];
-    setEnabledApps(nextApps);
-  };
-
-  const setHasChosenProfile = (val: boolean) => {
+  const setHasChosenProfile = useCallback((val: boolean) => {
     setHasChosenProfileState(val);
     if (typeof window !== 'undefined') {
       localStorage.setItem('legaltech_has_chosen', val ? 'true' : 'false');
     }
-  };
+  }, []);
 
-  const setActiveTenantById = (id: string) => {
+  const setActiveTenantById = useCallback((id: string) => {
     const found = defaultTenants.find(t => t.id === id);
     if (found) {
       setActiveTenantState(found);
@@ -117,28 +103,40 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
         localStorage.setItem('legaltech_active_tenant_id', id);
       }
     }
-  };
+  }, []);
 
-  const reset = () => {
+  const reset = useCallback(() => {
     setRole('Sócio');
-    setEnabledApps(['administrativo', 'crm', 'erp', 'controladoria']);
+    setPlan('Advanced');
     setHasChosenProfile(false);
     setActiveTenantState(defaultTenants[0]);
     setIsLoading(false);
     setLoadingModuleName("");
     if (typeof window !== 'undefined') {
       localStorage.removeItem('legaltech_active_tenant_id');
+      localStorage.removeItem('legaltech_role');
+      localStorage.removeItem('legaltech_plan');
+      localStorage.removeItem('legaltech_has_chosen');
     }
-  };
+  }, [setRole, setPlan, setHasChosenProfile]);
+
+  const enabledApps = useMemo(() => PlanModules[plan], [plan]);
+  
+  const permissions = useMemo(() => resolvePermissions(role, plan), [role, plan]);
+
+  const hasPermission = useCallback((permission: Permission) => {
+    return permissions.includes(permission);
+  }, [permissions]);
 
   return (
     <UserContext.Provider
       value={{
         role,
         setRole,
+        plan,
+        setPlan,
         enabledApps,
-        toggleApp,
-        setEnabledApps,
+        hasPermission,
         reset,
         isInitialized,
         hasChosenProfile,
