@@ -160,11 +160,30 @@ const TEMPLATE_ALUGUEL = `
 
 const TEMPLATE_BLANK = `<p></p>`;
 
+const TEMPLATE_CONTRATO = `
+<p><strong>CONTRATO DE PRESTAÇÃO DE SERVIÇOS ADVOCATÍCIOS</strong></p>
+<p></p>
+<p><strong>CONTRATANTE:</strong> <span data-placeholder="true">[Nome do Cliente]</span>, brasileiro(a), inscrito(a) no CPF/MF sob o nº <span data-placeholder="true">[CPF]</span>, residente e domiciliado(a) no endereço informado.</p>
+<p></p>
+<p><strong>CONTRATADO:</strong> <strong>ADVOGADO ASSOCIADOS</strong>, inscrito na OAB sob o nº 000.000.</p>
+<p></p>
+<p>Pelo presente instrumento particular, as partes acima qualificadas têm, entre si, justo e contratado o seguinte:</p>
+<p></p>
+<h2>Cláusula 1ª - Do Objeto</h2>
+<p>O objeto do presente contrato consiste na prestação de serviços jurídicos profissionais pelo CONTRATADO para representar o CONTRATANTE perante as vias judiciais ou administrativas.</p>
+<p></p>
+<h2>Cláusula 2ª - Dos Honorários Pactuados</h2>
+<p>Pelos serviços prestados, o CONTRATANTE pagará ao CONTRATADO a quantia de <span data-placeholder="true">[Valor do Dano]</span> a título de honorários advocatícios, divididos conforme acordado.</p>
+<p></p>
+<blockquote>As partes assinam o presente contrato em duas vias de igual teor.</blockquote>
+`;
+
 const TEMPLATES: Record<string, string> = {
   extravio: TEMPLATE_EXTRAVIO,
   negativacao: TEMPLATE_NEGATIVACAO,
   aluguel: TEMPLATE_ALUGUEL,
-  blank: TEMPLATE_BLANK
+  blank: TEMPLATE_BLANK,
+  contrato: TEMPLATE_CONTRATO
 };
 
 // Helper regex to scan variables inside brackets [like this] from the template html
@@ -434,10 +453,11 @@ Qualquer dúvida, estamos à inteira disposição no WhatsApp!`;
     setIsAiLoading(true);
 
     setTimeout(() => {
-      setEditorHtml(CONTRATO_HTML_TEMPLATE);
+      setSelectedTemplate("contrato");
+      setEditorHtml(TEMPLATES["contrato"]);
       setVariables({});
       if (editor) {
-        editor.commands.setContent(getRenderedHtml(CONTRATO_HTML_TEMPLATE, {}));
+        editor.commands.setContent(getRenderedHtml(TEMPLATES["contrato"], {}));
       }
       setIsAiLoading(false);
       triggerToast("Modelo processado! Identificamos 4 variáveis automaticamente.");
