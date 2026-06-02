@@ -345,7 +345,8 @@ export default function PeticoesUnifiedPage() {
     }));
   };
 
-  const handleTemplateChange = (value: string) => {
+  const handleTemplateChange = (value: string | null) => {
+    if (!value) return;
     setSelectedTemplate(value);
     setVariables({}); // Limpar variáveis mapeadas do documento antigo
     const newHtml = TEMPLATES[value] || TEMPLATES["blank"];
