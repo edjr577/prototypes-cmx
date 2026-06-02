@@ -276,6 +276,7 @@ const controladoriaMenuData: MenuSection[] = [
     title: "Trabalho & Fluxos",
     icon: Briefcase,
     items: [
+      { name: "Petições (IA)", href: "/controladoria/peticoes", icon: Sparkles, description: "Módulo de Petições Assistidas" },
       { name: "Tarefas", href: "/controladoria/tarefas", icon: CheckSquare, description: "Extrações com alta confiança (automáticas)" },
       { name: "Revisão humana", href: "/controladoria/revisao", icon: FileCheck, description: "Extrações com baixa confiança para auditoria" },
       { name: "Execuções", href: "/controladoria/execucoes", icon: Activity, description: "Logs de ciclos e varreduras dos robôs" },
@@ -458,7 +459,7 @@ export function Sidebar() {
 
                     // For prototype, we allow the main dashboards and IA. Others are marked disabled.
                     // Main ones: /administrativo, /crm, /erp, /controladoria, /administrativo/ia
-                    const isAllowed = ["/administrativo", "/administrativo/ia", "/administrativo/ia/conversas", "/crm", "/erp", "/controladoria"].includes(item.href) || item.action === "open_modelos";
+                    const isAllowed = ["/administrativo", "/administrativo/ia", "/administrativo/ia/conversas", "/crm", "/erp", "/controladoria", "/controladoria/peticoes"].includes(item.href) || item.action === "open_modelos";
                     const isTarefas = item.name === "Tarefas" && pathname.startsWith("/controladoria");
 
                     if (item.action === "open_modelos") {
