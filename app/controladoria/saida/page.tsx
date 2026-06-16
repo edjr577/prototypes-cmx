@@ -334,7 +334,7 @@ export default function SaidaPage() {
                   style={{ fontSize: "10px", fill: "var(--muted-foreground)" }}
                 />
                 <Tooltip
-                  formatter={(v: number) => formatBRL(v)}
+                  formatter={(v) => formatBRL(Number(v))}
                   cursor={{ fill: "var(--muted)" }}
                   contentStyle={{
                     backgroundColor: "var(--card)",
@@ -421,7 +421,7 @@ export default function SaidaPage() {
                   ))}
                 </Pie>
                 <Tooltip
-                  formatter={(v: number) => `${v}%`}
+                  formatter={(v) => `${Number(v)}%`}
                   contentStyle={{
                     backgroundColor: "var(--card)",
                     borderColor: "var(--border)",
@@ -474,7 +474,7 @@ export default function SaidaPage() {
                   style={{ fontSize: "11px", fill: "var(--muted-foreground)" }}
                 />
                 <Tooltip
-                  formatter={(v: number) => formatBRL(v)}
+                  formatter={(v) => formatBRL(Number(v))}
                   cursor={{ fill: "var(--muted)" }}
                   contentStyle={{
                     backgroundColor: "var(--card)",

@@ -447,7 +447,7 @@ export default function EquipePage() {
                   style={{ fontSize: "11px", fill: "var(--muted-foreground)" }}
                 />
                 <Tooltip
-                  formatter={(v: number) => `${v}%`}
+                  formatter={(v) => `${Number(v)}%`}
                   cursor={{ fill: "var(--muted)" }}
                   contentStyle={{
                     backgroundColor: "var(--card)",

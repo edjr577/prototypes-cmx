@@ -54,7 +54,7 @@ const kpis = [
     label: "Novos contratos",
     value: "28",
     change: "+5 vs anterior · meta 30",
-    trend: "up" as const,
+    trend: "up" as "up" | "down" | "neutral",
     status: "atencao" as const,
     icon: Briefcase,
     color: "text-blue-500",
@@ -63,7 +63,7 @@ const kpis = [
     label: "Ticket médio",
     value: "R$ 11,1k",
     change: "+3,2% · meta R$ 10k",
-    trend: "up" as const,
+    trend: "up" as "up" | "down" | "neutral",
     status: "ok" as const,
     icon: DollarSign,
     color: "text-emerald-500",
@@ -72,7 +72,7 @@ const kpis = [
     label: "Taxa de fechamento",
     value: "37%",
     change: "Proposta → contrato · meta 35%",
-    trend: "up" as const,
+    trend: "up" as "up" | "down" | "neutral",
     status: "ok" as const,
     icon: Target,
     color: "text-indigo-500",
@@ -81,7 +81,7 @@ const kpis = [
     label: "Pipeline aberto",
     value: "R$ 1,24M",
     change: "76 propostas em aberto",
-    trend: "neutral" as const,
+    trend: "neutral" as "up" | "down" | "neutral",
     status: "ok" as const,
     icon: Users,
     color: "text-amber-500",
@@ -356,7 +356,7 @@ export default function ComercialPage() {
                   style={{ fontSize: "10px", fill: "var(--muted-foreground)" }}
                 />
                 <Tooltip
-                  formatter={(v: number) => formatBRL(v)}
+                  formatter={(v) => formatBRL(Number(v))}
                   contentStyle={{
                     backgroundColor: "var(--card)",
                     borderColor: "var(--border)",
@@ -507,7 +507,7 @@ export default function ComercialPage() {
                   ))}
                 </Pie>
                 <Tooltip
-                  formatter={(v: number) => `${v}%`}
+                  formatter={(v) => `${Number(v)}%`}
                   contentStyle={{
                     backgroundColor: "var(--card)",
                     borderColor: "var(--border)",
