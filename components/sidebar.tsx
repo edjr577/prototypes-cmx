@@ -23,7 +23,7 @@ import {
   // ERP
   Scale, Bell, Gavel, FileText, FileSignature, Award, Wallet, Receipt, UserPlus, Clock3, KeyRound, ShieldCheck,
   // Controladoria
-  ShieldAlert, Plus, FileCheck, Map,
+  ShieldAlert, Plus, FileCheck, Map, Coins,
   // Collapse and User
   ChevronsUpDown, PanelLeftClose, PanelLeftOpen, PanelLeft
 } from "lucide-react";
@@ -267,8 +267,19 @@ const controladoriaMenuData: MenuSection[] = [
     title: "Geral",
     icon: LayoutDashboard,
     items: [
-      { name: "Painel", href: "/controladoria", icon: LayoutDashboard, description: "Visão consolidada de execuções e CRONs" },
-      { name: "Prazos próximos", href: "/controladoria/prazos", icon: Calendar, description: "Prazos gerados por extrações validadas" },
+      { name: "Hoje", href: "/controladoria", icon: LayoutDashboard, description: "O que precisa de você hoje · cockpit" },
+      { name: "Comercial", href: "/controladoria/comercial", icon: TrendingUp, description: "Estou vendendo bem? Captação e conversão" },
+      { name: "Saída", href: "/controladoria/saida", icon: Coins, description: "O que vai virar honorário? Benefícios, RPVs e acordos" },
+      { name: "Financeiro", href: "/controladoria/financeiro", icon: Wallet, description: "Estou convertendo contratos em caixa? Quem pagou e atraso" },
+      { name: "Equipe", href: "/controladoria/equipe", icon: Users, description: "Entrego com qualidade e prazo? Quem produziu e acumulou" },
+    ]
+  },
+  {
+    id: "planejamento",
+    title: "Planejamento",
+    icon: Target,
+    items: [
+      { name: "Metas", href: "/controladoria/metas", icon: Target, description: "Defina as metas que calibram os semáforos" },
     ]
   },
   {
@@ -276,11 +287,10 @@ const controladoriaMenuData: MenuSection[] = [
     title: "Trabalho & Fluxos",
     icon: Briefcase,
     items: [
-      { name: "Petições (IA)", href: "/controladoria/peticoes", icon: Sparkles, description: "Módulo de Petições Assistidas" },
-      { name: "Tarefas", href: "/controladoria/tarefas", icon: CheckSquare, description: "Extrações com alta confiança (automáticas)" },
-      { name: "Revisão humana", href: "/controladoria/revisao", icon: FileCheck, description: "Extrações com baixa confiança para auditoria" },
-      { name: "Execuções", href: "/controladoria/execucoes", icon: Activity, description: "Logs de ciclos e varreduras dos robôs" },
-      { name: "Publicações", href: "/controladoria/publicacoes", icon: FileText, description: "Notas de expediente capturadas" },
+      { name: "Petições (IA)", href: "/controladoria/peticoes", icon: Sparkles, description: "Petições assistidas por IA" },
+      { name: "Tarefas", href: "/controladoria/tarefas", icon: CheckSquare, description: "Tarefas geradas automaticamente" },
+      { name: "Revisão humana", href: "/controladoria/revisao", icon: FileCheck, description: "Itens que precisam de conferência" },
+      { name: "Publicações", href: "/controladoria/publicacoes", icon: FileText, description: "Publicações dos diários oficiais" },
     ]
   },
   {
@@ -288,15 +298,15 @@ const controladoriaMenuData: MenuSection[] = [
     title: "Clientes",
     icon: Users,
     items: [
-      { name: "Gestão de Clientes", href: "/controladoria/clientes", icon: Users, description: "Mapeamento de CPFs/CNPJs monitorados" },
+      { name: "Gestão de Clientes", href: "/controladoria/clientes", icon: Users, description: "Base de clientes monitorados" },
     ]
   },
   {
     id: "financeiro",
-    title: "Financeiro",
+    title: "Custos & Faturamento",
     icon: DollarSign,
     items: [
-      { name: "Visão financeira", href: "/controladoria/financeiro/visao", icon: Activity, description: "Custos de APIs e consultas de robôs" },
+      { name: "Custos de operação", href: "/controladoria/financeiro/visao", icon: Activity, description: "Consumo de processamento e integrações" },
       { name: "Recibos", href: "/controladoria/financeiro/recibos", icon: Receipt, description: "Recibos de reembolsos de custas" },
     ]
   },
@@ -305,7 +315,15 @@ const controladoriaMenuData: MenuSection[] = [
     title: "Controle & Compliance",
     icon: ShieldAlert,
     items: [
-      { name: "Auditoria", href: "/controladoria/compliance/auditoria", icon: ShieldAlert, description: "Acurácia de IA e relatórios de discrepância" },
+      { name: "Auditoria", href: "/controladoria/compliance/auditoria", icon: ShieldAlert, description: "Trilha de auditoria e conformidade" },
+    ]
+  },
+  {
+    id: "sistema",
+    title: "Sistema",
+    icon: Cpu,
+    items: [
+      { name: "Plataforma", href: "/controladoria/plataforma", icon: Activity, description: "Saúde dos robôs, CRONs e varreduras" },
     ]
   },
   {
@@ -351,7 +369,7 @@ export function Sidebar() {
       if (['financeiro', 'compliance', 'configuracoes'].includes(section.id)) return hasPermission('controladoria:admin');
       return true;
     });
-    defaultOpenSections = { inicio: true, trabalho: true };
+    defaultOpenSections = { inicio: true, planejamento: true, trabalho: true };
   } else {
     menuData = ceoMenuData.filter(section => {
       if (section.id === 'configuracoes') return hasPermission('admin:office_edit') || hasPermission('admin:full_access');
@@ -459,7 +477,7 @@ export function Sidebar() {
 
                     // For prototype, we allow the main dashboards and IA. Others are marked disabled.
                     // Main ones: /administrativo, /crm, /erp, /controladoria, /administrativo/ia
-                    const isAllowed = ["/administrativo", "/administrativo/ia", "/administrativo/ia/conversas", "/crm", "/erp", "/controladoria", "/controladoria/peticoes"].includes(item.href) || item.action === "open_modelos";
+                    const isAllowed = ["/administrativo", "/administrativo/ia", "/administrativo/ia/conversas", "/crm", "/erp", "/controladoria", "/controladoria/comercial", "/controladoria/saida", "/controladoria/financeiro", "/controladoria/equipe", "/controladoria/metas", "/controladoria/plataforma", "/controladoria/peticoes"].includes(item.href) || item.action === "open_modelos";
                     const isTarefas = item.name === "Tarefas" && pathname.startsWith("/controladoria");
 
                     if (item.action === "open_modelos") {

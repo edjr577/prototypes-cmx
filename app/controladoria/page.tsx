@@ -1,6 +1,9 @@
 "use client";
 
 import React from "react";
+import Link from "next/link";
+import { useUser } from "@/app/context/UserContext";
+import { useMetas, statusOf } from "./metas-context";
 import {
   Card,
   CardContent,
@@ -8,486 +11,390 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import {
-  RefreshCw,
-  Scale,
+  TrendingUp,
+  Coins,
+  Banknote,
   Award,
-  CheckSquare,
-  FileCheck,
-  Clock,
-  FileText,
   AlertTriangle,
-  DollarSign,
-  Activity,
-  Calendar as CalendarIcon,
-  Play
+  Users,
+  Wallet,
+  Target,
+  ArrowRight,
+  ArrowUpRight,
+  CalendarClock,
+  Check,
+  CheckCircle2,
+  RotateCcw,
 } from "lucide-react";
-import {
-  ResponsiveContainer,
-  AreaChart,
-  Area,
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
-  PieChart,
-  Pie,
-  Cell,
-  LineChart,
-  Line,
-} from "recharts";
 
 // --- MOCK DATA ---
-const stats = [
-  { label: "Varreduras (Ciclos CRON)", value: "842.100", change: "+12.4% vs mês anterior", icon: RefreshCw, color: "text-blue-500" },
-  { label: "Processos Monitorados", value: "14.850", change: "Em 92 diários oficiais", icon: Scale, color: "text-indigo-500" },
-  { label: "Confiança Média da IA", value: "92.4%", change: "Meta da operação: >90%", icon: Award, color: "text-emerald-500" },
-  { label: "Tarefas Automáticas Criadas", value: "124.030", change: "100% de alta confiança", icon: CheckSquare, color: "text-teal-500" },
-  { label: "Fila de Revisão Humana", value: "142", change: "-18% vs ontem (baixa confiança)", icon: FileCheck, color: "text-amber-500" },
-  { label: "Tempo Médio por Ciclo", value: "1m 15s", change: "Meta de SLA: < 2m 00s", icon: Clock, color: "text-sky-500" },
-  { label: "Diários Oficiais Ativos", value: "92", change: "+4 homologados esta semana", icon: FileText, color: "text-purple-500" },
-  { label: "Erros de OCR / Captura", value: "0.14%", change: "-0.05% de melhora residual", icon: AlertTriangle, color: "text-rose-500" },
-  { label: "Custo Médio por Consulta", value: "R$ 0,08", change: "Meta de economia: < R$ 0,10", icon: DollarSign, color: "text-cyan-500" },
-  { label: "Varreduras Hoje", value: "24/24", change: "Todos os ciclos executados OK", icon: Activity, color: "text-yellow-500" },
+type Sev = "ok" | "atencao" | "critico";
+
+const pulso: {
+  lens: string;
+  href: string;
+  valor: string;
+  label: string;
+  sub: string;
+  metaId: string;
+  icon: React.ComponentType<{ className?: string }>;
+}[] = [
+  {
+    lens: "Comercial",
+    href: "/controladoria/comercial",
+    valor: "R$ 312k",
+    label: "Receita contratada",
+    sub: "89% da meta · faltam R$ 38k",
+    metaId: "receita_contratada",
+    icon: TrendingUp,
+  },
+  {
+    lens: "Saída",
+    href: "/controladoria/saida",
+    valor: "R$ 184k",
+    label: "Honorário · 7 dias",
+    sub: "12 realizações previstas",
+    metaId: "honorario_realizado",
+    icon: Coins,
+  },
+  {
+    lens: "Financeiro",
+    href: "/controladoria/financeiro",
+    valor: "74%",
+    label: "Conversão em caixa",
+    sub: "abaixo da meta de 80%",
+    metaId: "conversao_caixa",
+    icon: Banknote,
+  },
+  {
+    lens: "Equipe",
+    href: "/controladoria/equipe",
+    valor: "88%",
+    label: "Taxa de êxito",
+    sub: "1 advogado sobrecarregado",
+    metaId: "taxa_exito",
+    icon: Award,
+  },
 ];
 
-const dataVolumeVarreduras = [
-  { hora: "00:00", volume: 12000 },
-  { hora: "04:00", volume: 18000 },
-  { hora: "08:00", volume: 68000 },
-  { hora: "12:00", volume: 95000 },
-  { hora: "16:00", volume: 112000 },
-  { hora: "20:00", volume: 45000 },
+const acoes: {
+  id: string;
+  sev: Sev;
+  titulo: string;
+  contexto: string;
+  cta: string;
+  href: string;
+  icon: React.ComponentType<{ className?: string }>;
+}[] = [
+  {
+    id: "prazos",
+    sev: "critico",
+    titulo: "12 prazos vencidos",
+    contexto: "Érica Nunes concentra 8 dos atrasos · 8 em risco (≤ 3 dias)",
+    cta: "Ver equipe",
+    href: "/controladoria/equipe",
+    icon: AlertTriangle,
+  },
+  {
+    id: "inadimplencia",
+    sev: "critico",
+    titulo: "R$ 96k em inadimplência",
+    contexto: "João R. de Azevedo — R$ 20k, 162 dias em atraso",
+    cta: "Ver financeiro",
+    href: "/controladoria/financeiro",
+    icon: Wallet,
+  },
+  {
+    id: "sobrecarga",
+    sev: "critico",
+    titulo: "Flávio M. Nogueira sobrecarregado",
+    contexto: "47 itens em aberto · acima do limite saudável (40)",
+    cta: "Ver equipe",
+    href: "/controladoria/equipe",
+    icon: Users,
+  },
+  {
+    id: "conversao",
+    sev: "atencao",
+    titulo: "Conversão em caixa abaixo da meta",
+    contexto: "74% vs meta de 80% · R$ 286k faturado, R$ 231k recebido",
+    cta: "Ver financeiro",
+    href: "/controladoria/financeiro",
+    icon: Banknote,
+  },
+  {
+    id: "meta",
+    sev: "atencao",
+    titulo: "Meta comercial em risco",
+    contexto: "89% da meta · faltam R$ 38k e restam 14 dias no mês",
+    cta: "Ver comercial",
+    href: "/controladoria/comercial",
+    icon: Target,
+  },
+  {
+    id: "saida",
+    sev: "ok",
+    titulo: "R$ 184k em honorário a realizar esta semana",
+    contexto: "6 benefícios, 4 RPVs e 2 acordos previstos",
+    cta: "Ver saída",
+    href: "/controladoria/saida",
+    icon: Coins,
+  },
 ];
 
-const dataConfiancaStatus = [
-  { date: "Seg", Automático: 15400, Revisao: 1200 },
-  { date: "Ter", Automático: 18200, Revisao: 980 },
-  { date: "Qua", Automático: 17100, Revisao: 1150 },
-  { date: "Qui", Automático: 19800, Revisao: 850 },
-  { date: "Sex", Automático: 22400, Revisao: 740 },
-  { date: "Sáb", Automático: 8900, Revisao: 450 },
-  { date: "Dom", Automático: 4500, Revisao: 210 },
+const agenda: { data: string; tipo: string; cliente: string; valor: string }[] = [
+  { data: "17/jun", tipo: "Benefício concedido", cliente: "Maria S. dos Santos", valor: "R$ 18,4k" },
+  { data: "18/jun", tipo: "RPV · aguardando", cliente: "João R. de Azevedo", valor: "R$ 24,1k" },
+  { data: "18/jun", tipo: "Acordo homologado", cliente: "Condomínio Angra", valor: "R$ 12,8k" },
+  { data: "19/jun", tipo: "Benefício concedido", cliente: "Benildo da Silva", valor: "R$ 9,6k" },
+  { data: "20/jun", tipo: "Acordo trabalhista", cliente: "Ancra Hotelaria", valor: "R$ 15,2k" },
 ];
 
-const dataVolumeCrawlers = [
-  { name: "Crawler-TJSP", total: 420000 },
-  { name: "Crawler-TRT2", total: 240000 },
-  { name: "Crawler-TRF3", total: 110000 },
-  { name: "Crawler-TJRJ", total: 95000 },
-  { name: "Crawler-STJ", total: 32000 },
-];
+const sevDot: Record<Sev, string> = {
+  ok: "bg-emerald-500",
+  atencao: "bg-amber-500",
+  critico: "bg-rose-500",
+};
 
-const dataAcuraciaTribunal = [
-  { tribunal: "TJSP", acuracia: 94.2 },
-  { tribunal: "TRT2", acuracia: 95.8 },
-  { tribunal: "TRF3", acuracia: 89.4 },
-  { tribunal: "TJRJ", acuracia: 91.2 },
-  { tribunal: "STJ", acuracia: 98.5 },
-];
+const sevIconWrap: Record<Sev, string> = {
+  ok: "bg-emerald-500/10 text-emerald-500",
+  atencao: "bg-amber-500/10 text-amber-500",
+  critico: "bg-rose-500/10 text-rose-500",
+};
 
-const dataRevisaoSetor = [
-  { name: "Cível", value: 65, color: "oklch(0.75 0.08 240)" }, // Soft Blue
-  { name: "Trabalhista", value: 42, color: "oklch(0.78 0.08 145)" }, // Soft Emerald
-  { name: "Previdenciário", value: 20, color: "oklch(0.79 0.09 70)" }, // Soft Amber
-  { name: "Tributário", value: 15, color: "oklch(0.74 0.09 20)" }, // Soft Red/Rose
-];
+const sevLabel: Record<Sev, string> = {
+  ok: "No alvo",
+  atencao: "Atenção",
+  critico: "Crítico",
+};
 
-export default function ControladoriaPage() {
-  const [startDate, setStartDate] = React.useState<Date>(new Date(2026, 4, 21)); // May 21, 2026
-  const [endDate, setEndDate] = React.useState<Date>(new Date(2026, 4, 27));   // May 27, 2026
-  const [showStartCalendar, setShowStartCalendar] = React.useState<boolean>(false);
-  const [showEndCalendar, setShowEndCalendar] = React.useState<boolean>(false);
+const sevOrder: Record<Sev, number> = { critico: 0, atencao: 1, ok: 2 };
 
-  const formatDate = (date: Date) => {
-    return date.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' });
-  };
+export default function CockpitPage() {
+  const { activeTenant } = useUser();
+  const { getMeta } = useMetas();
+  const [resolvidos, setResolvidos] = React.useState<string[]>([]);
+
+  // Data de referência do protótipo (dados de junho/2026) — derivada, não digitada
+  const hoje = new Date(2026, 5, 16);
+  const dataFmt = hoje.toLocaleDateString("pt-BR", {
+    weekday: "long",
+    day: "2-digit",
+    month: "long",
+    year: "numeric",
+  });
+  const dataLabel = dataFmt.charAt(0).toUpperCase() + dataFmt.slice(1);
+
+  const visiveis = [...acoes]
+    .filter((a) => !resolvidos.includes(a.id))
+    .sort((a, b) => sevOrder[a.sev] - sevOrder[b.sev]);
+  const criticos = visiveis.filter((a) => a.sev === "critico").length;
+  const atencoes = visiveis.filter((a) => a.sev === "atencao").length;
+
+  const resolver = (id: string) => setResolvidos((prev) => [...prev, id]);
+  const reabrir = () => setResolvidos([]);
 
   return (
     <div className="flex flex-col gap-6 pb-12">
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight text-foreground">Dashboard Operacional</h1>
-        <p className="text-muted-foreground">
-          Logs de execução de robôs coletores (CRONs), confiança da IA e filas de revisão de prazos
-        </p>
-      </div>
-
-      {/* --- FILTERS & ACTIONS SECTION --- */}
-      <div className="flex flex-col lg:flex-row items-center gap-4 w-full !overflow-visible">
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 flex-1 w-full">
-          {/* Dt Inicio */}
-          <div className="relative">
-            <div className="relative">
-              <Button
-                variant="outline"
-                onClick={() => {
-                  setShowStartCalendar(!showStartCalendar);
-                  setShowEndCalendar(false);
-                }}
-                className="w-full justify-start text-left font-normal h-9 bg-background/50 border-input/60 px-3 cursor-pointer"
-              >
-                <CalendarIcon className="mr-2 h-4 w-4 text-muted-foreground/60" />
-                <span>Início: {formatDate(startDate)}</span>
-              </Button>
-
-              {showStartCalendar && (
-                <div className="absolute top-11 left-0 z-50 p-3 rounded-lg border border-border bg-popover text-popover-foreground shadow-md outline-none animate-in fade-in-50 slide-in-from-top-1 w-64">
-                  <div className="flex items-center justify-between pb-2 mb-2 border-b border-border/50">
-                    <span className="text-xs font-semibold">Maio de 2026</span>
-                  </div>
-                  <div className="grid grid-cols-7 gap-1 text-center text-[10px] font-semibold text-muted-foreground mb-1">
-                    <span>D</span><span>S</span><span>T</span><span>Q</span><span>Q</span><span>S</span><span>S</span>
-                  </div>
-                  <div className="grid grid-cols-7 gap-1">
-                    {Array.from({ length: 5 }).map((_, i) => (
-                      <span key={`empty-${i}`} />
-                    ))}
-                    {Array.from({ length: 31 }).map((_, i) => {
-                      const day = i + 1;
-                      const isSelected = startDate.getDate() === day && startDate.getMonth() === 4;
-                      return (
-                        <button
-                          key={`day-${day}`}
-                          type="button"
-                          onClick={() => {
-                            setStartDate(new Date(2026, 4, day));
-                            setShowStartCalendar(false);
-                          }}
-                          className={`size-7 text-xs rounded-md flex items-center justify-center transition-all hover:bg-accent hover:text-accent-foreground cursor-pointer ${isSelected ? "bg-primary text-primary-foreground font-semibold hover:bg-primary hover:text-primary-foreground" : ""
-                            }`}
-                        >
-                          {day}
-                        </button>
-                      );
-                    })}
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
-
-          {/* Dt Fim */}
-          <div className="relative">
-            <div className="relative">
-              <Button
-                variant="outline"
-                onClick={() => {
-                  setShowEndCalendar(!showEndCalendar);
-                  setShowStartCalendar(false);
-                }}
-                className="w-full justify-start text-left font-normal h-9 bg-background/50 border-input/60 px-3 cursor-pointer"
-              >
-                <CalendarIcon className="mr-2 h-4 w-4 text-muted-foreground/60" />
-                <span>Fim: {formatDate(endDate)}</span>
-              </Button>
-
-              {showEndCalendar && (
-                <div className="absolute top-11 left-0 z-50 p-3 rounded-lg border border-border bg-popover text-popover-foreground shadow-md outline-none animate-in fade-in-50 slide-in-from-top-1 w-64">
-                  <div className="flex items-center justify-between pb-2 mb-2 border-b border-border/50">
-                    <span className="text-xs font-semibold">Maio de 2026</span>
-                  </div>
-                  <div className="grid grid-cols-7 gap-1 text-center text-[10px] font-semibold text-muted-foreground mb-1">
-                    <span>D</span><span>S</span><span>T</span><span>Q</span><span>Q</span><span>S</span><span>S</span>
-                  </div>
-                  <div className="grid grid-cols-7 gap-1">
-                    {Array.from({ length: 5 }).map((_, i) => (
-                      <span key={`empty-${i}`} />
-                    ))}
-                    {Array.from({ length: 31 }).map((_, i) => {
-                      const day = i + 1;
-                      const isSelected = endDate.getDate() === day && endDate.getMonth() === 4;
-                      return (
-                        <button
-                          key={`day-${day}`}
-                          type="button"
-                          onClick={() => {
-                            setEndDate(new Date(2026, 4, day));
-                            setShowEndCalendar(false);
-                          }}
-                          className={`size-7 text-xs rounded-md flex items-center justify-center transition-all hover:bg-accent hover:text-accent-foreground cursor-pointer ${isSelected ? "bg-primary text-primary-foreground font-semibold hover:bg-primary hover:text-primary-foreground" : ""
-                            }`}
-                        >
-                          {day}
-                        </button>
-                      );
-                    })}
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
-
-          {/* Robô Coletor */}
-          <div className="relative">
-            <select className="h-9 w-full rounded-lg border border-border bg-background hover:bg-muted hover:text-foreground dark:border-input dark:bg-input/30 dark:hover:bg-input/50 px-3 text-sm text-foreground/80 cursor-pointer transition-all focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50">
-              <option value="" className="bg-popover text-popover-foreground">Todos os Crawlers</option>
-              <option value="tjsp" className="bg-popover text-popover-foreground">Crawler-TJSP</option>
-              <option value="trt2" className="bg-popover text-popover-foreground">Crawler-TRT2</option>
-              <option value="trf3" className="bg-popover text-popover-foreground">Crawler-TRF3</option>
-              <option value="stj" className="bg-popover text-popover-foreground">Crawler-STJ</option>
-            </select>
-          </div>
-
-          {/* Status do Ciclo */}
-          <div className="relative">
-            <select className="h-9 w-full rounded-lg border border-border bg-background hover:bg-muted hover:text-foreground dark:border-input dark:bg-input/30 dark:hover:bg-input/50 px-3 text-sm text-foreground/80 cursor-pointer transition-all focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50">
-              <option value="" className="bg-popover text-popover-foreground">Qualquer Status</option>
-              <option value="sucesso" className="bg-popover text-popover-foreground">Sucesso (Automático)</option>
-              <option value="revisao" className="bg-popover text-popover-foreground">Aviso / Baixa Confiança</option>
-              <option value="falha" className="bg-popover text-popover-foreground">Falha Crítica (OCR)</option>
-            </select>
-          </div>
-
-          {/* Tipo de Execução */}
-          <div className="relative">
-            <select className="h-9 w-full rounded-lg border border-border bg-background hover:bg-muted hover:text-foreground dark:border-input dark:bg-input/30 dark:hover:bg-input/50 px-3 text-sm text-foreground/80 cursor-pointer transition-all focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50">
-              <option value="" className="bg-popover text-popover-foreground">Todos os Ciclos</option>
-              <option value="cron" className="bg-popover text-popover-foreground">Agendados (CRON)</option>
-              <option value="manual" className="bg-popover text-popover-foreground">Trigger Manual</option>
-            </select>
-          </div>
+      {/* --- HEADER --- */}
+      <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-2">
+        <div>
+          <p className="text-xs font-bold uppercase tracking-widest text-primary/70">
+            Visão do dia
+          </p>
+          <h1 className="text-3xl font-bold tracking-tight text-foreground">
+            O que precisa de você hoje
+          </h1>
+          <p className="text-muted-foreground">
+            {dataLabel} · {activeTenant.name}
+          </p>
         </div>
-
-        {/* Action Trigger Buttons */}
-        <div className="flex gap-2 w-full lg:w-auto">
-          <Button className="h-9 gap-2 flex-1 lg:flex-none px-4 bg-primary/90 text-primary-foreground hover:bg-primary shadow-sm active:scale-95 transition-all">
-            <RefreshCw className="size-4 pointer-events-none" />
-            Atualizar Logs
-          </Button>
-          <Button variant="outline" className="h-9 gap-2 px-3 border-emerald-500/20 text-emerald-500 hover:bg-emerald-500/10 active:scale-95 transition-all">
-            <Play className="size-4 pointer-events-none" />
-            Rodar CRON
-          </Button>
+        <div className="flex items-center gap-3 text-sm">
+          <span className="inline-flex items-center gap-1.5 text-rose-500">
+            <span className="size-2 rounded-full bg-rose-500" />
+            <span className="font-semibold text-foreground">{criticos}</span> críticos
+          </span>
+          <span className="inline-flex items-center gap-1.5 text-amber-500">
+            <span className="size-2 rounded-full bg-amber-500" />
+            <span className="font-semibold text-foreground">{atencoes}</span> em atenção
+          </span>
         </div>
       </div>
 
-      {/* --- BIG NUMBERS SECTION --- */}
-      <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5">
-        {stats.map((item) => {
-          const Icon = item.icon;
+      {/* --- PULSO DO ESCRITÓRIO (4 lentes) --- */}
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        {pulso.map((p) => {
+          const Icon = p.icon;
+          const status = statusOf(getMeta(p.metaId)!, "mes");
           return (
-            <Card key={item.label} className="overflow-hidden">
-              <CardContent className="px-4 py-0 flex flex-col gap-2">
-                <div className="flex flex-row items-center justify-between">
-                  <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
-                    {item.label}
-                  </span>
-                  <div className={`rounded-lg p-1.5 bg-muted ${item.color}`}>
-                    <Icon className="size-4" />
+            <Link key={p.lens} href={p.href} className="group">
+              <Card className="h-full transition-all hover:ring-foreground/20 hover:bg-muted/20">
+                <CardContent className="px-4 py-0 flex flex-col gap-2">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <span className={`size-2 rounded-full ${sevDot[status]}`} />
+                      <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
+                        {p.lens}
+                      </span>
+                    </div>
+                    <div className={`rounded-lg p-1.5 ${sevIconWrap[status]}`}>
+                      <Icon className="size-4" />
+                    </div>
                   </div>
-                </div>
-                <div className="text-2xl font-bold tracking-tight text-foreground">{item.value}</div>
-                <div className="text-xs text-muted-foreground/80">{item.change}</div>
-              </CardContent>
-            </Card>
+                  <div className="text-2xl font-bold tracking-tight text-foreground">
+                    {p.valor}
+                  </div>
+                  <div className="flex flex-col">
+                    <span className="text-xs font-medium text-foreground/80">
+                      {p.label}
+                    </span>
+                    <span className="text-[11px] text-muted-foreground/80">{p.sub}</span>
+                  </div>
+                  <div className="flex items-center gap-1 text-[11px] font-medium text-primary opacity-0 group-hover:opacity-100 transition-opacity">
+                    Abrir lente
+                    <ArrowRight className="size-3" />
+                  </div>
+                </CardContent>
+              </Card>
+            </Link>
           );
         })}
       </div>
 
-      {/* --- CHARTS SECTION --- */}
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-        {/* Fila de Revisão por Setor */}
-        <Card className="col-span-1">
+      {/* --- PRECISA DE VOCÊ + AGENDA --- */}
+      <div className="grid gap-6 lg:grid-cols-3">
+        {/* Feed de ações priorizado */}
+        <Card className="lg:col-span-2">
           <CardHeader>
-            <CardTitle className="text-base font-semibold">Fila de Revisão por Setor</CardTitle>
-            <CardDescription>Extrações sob auditoria manual de baixa confiança</CardDescription>
+            <CardTitle className="text-base font-semibold">Precisa de você</CardTitle>
+            <CardDescription>
+              Exceções das 4 lentes, priorizadas por severidade
+            </CardDescription>
           </CardHeader>
-          <CardContent className="h-72">
-            <ResponsiveContainer width="100%" height="100%">
-              <PieChart>
-                <Pie
-                  data={dataRevisaoSetor}
-                  cx="50%"
-                  cy="50%"
-                  innerRadius={60}
-                  outerRadius={85}
-                  paddingAngle={4}
-                  dataKey="value"
-                >
-                  {dataRevisaoSetor.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={entry.color} />
-                  ))}
-                </Pie>
-                <Tooltip
-                  contentStyle={{
-                    backgroundColor: "var(--card)",
-                    borderColor: "var(--border)",
-                    borderRadius: "8px",
-                  }}
-                  itemStyle={{ color: "var(--foreground)" }}
-                />
-                <Legend layout="horizontal" verticalAlign="bottom" align="center" iconType="circle" />
-              </PieChart>
-            </ResponsiveContainer>
+          <CardContent className="flex flex-col gap-2 pt-1">
+            {visiveis.length === 0 ? (
+              <div className="flex flex-col items-center justify-center gap-2 py-12 text-center">
+                <div className="rounded-full p-3 bg-emerald-500/10 text-emerald-500">
+                  <CheckCircle2 className="size-6" />
+                </div>
+                <span className="font-medium text-foreground">Tudo em dia</span>
+                <span className="text-sm text-muted-foreground">
+                  Nenhuma pendência aberta. Bom trabalho!
+                </span>
+                {resolvidos.length > 0 && (
+                  <button
+                    onClick={reabrir}
+                    className="mt-1 inline-flex items-center gap-1.5 text-xs font-medium text-primary hover:bg-primary/10 rounded-md px-2.5 py-1.5 transition-colors cursor-pointer"
+                  >
+                    <RotateCcw className="size-3.5" />
+                    Reabrir lista
+                  </button>
+                )}
+              </div>
+            ) : (
+              <>
+                {visiveis.map((a) => {
+                  const Icon = a.icon;
+                  return (
+                    <div
+                      key={a.id}
+                      className="flex items-center gap-3 rounded-lg border border-border/50 px-3 py-3 hover:bg-muted/30 transition-colors"
+                    >
+                      <div className={`rounded-lg p-2 shrink-0 ${sevIconWrap[a.sev]}`}>
+                        <Icon className="size-4" />
+                      </div>
+                      <div className="flex flex-col min-w-0 flex-1">
+                        <div className="flex items-center gap-2">
+                          <span className="font-medium text-foreground truncate">
+                            {a.titulo}
+                          </span>
+                          <span
+                            className={`hidden sm:inline-flex items-center rounded-md px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide ${sevIconWrap[a.sev]}`}
+                          >
+                            {sevLabel[a.sev]}
+                          </span>
+                        </div>
+                        <span className="text-xs text-muted-foreground truncate">
+                          {a.contexto}
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-1 shrink-0">
+                        <Link
+                          href={a.href}
+                          className="inline-flex items-center gap-1 text-xs font-medium text-primary hover:bg-primary/10 rounded-md px-2.5 py-1.5 transition-colors"
+                        >
+                          {a.cta}
+                          <ArrowRight className="size-3.5" />
+                        </Link>
+                        <button
+                          onClick={() => resolver(a.id)}
+                          title="Marcar como resolvido"
+                          className="inline-flex items-center justify-center size-8 rounded-md text-muted-foreground hover:bg-emerald-500/10 hover:text-emerald-500 transition-colors cursor-pointer"
+                        >
+                          <Check className="size-4 pointer-events-none" />
+                        </button>
+                      </div>
+                    </div>
+                  );
+                })}
+                {resolvidos.length > 0 && (
+                  <div className="flex items-center justify-between pt-1 text-xs text-muted-foreground">
+                    <span>{resolvidos.length} resolvida(s) nesta sessão</span>
+                    <button
+                      onClick={reabrir}
+                      className="inline-flex items-center gap-1.5 font-medium text-primary hover:bg-primary/10 rounded-md px-2 py-1 transition-colors cursor-pointer"
+                    >
+                      <RotateCcw className="size-3.5" />
+                      Desfazer
+                    </button>
+                  </div>
+                )}
+              </>
+            )}
           </CardContent>
         </Card>
 
-        {/* Volume de Varreduras dos Robôs */}
-        <Card className="col-span-1">
+        {/* Agenda da semana */}
+        <Card className="lg:col-span-1">
           <CardHeader>
-            <CardTitle className="text-base font-semibold">Volume por Robô (Crawler)</CardTitle>
-            <CardDescription>Total de páginas e processos varridos no mês</CardDescription>
+            <CardTitle className="text-base font-semibold">
+              Acontece esta semana
+            </CardTitle>
+            <CardDescription>Realizações que viram honorário</CardDescription>
           </CardHeader>
-          <CardContent className="h-72">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={dataVolumeCrawlers} margin={{ top: 10, right: 10, left: -10, bottom: 5 }}>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} opacity={0.15} />
-                <XAxis
-                  dataKey="name"
-                  axisLine={false}
-                  tickLine={false}
-                  style={{ fontSize: "11px", fill: "var(--muted-foreground)" }}
-                />
-                <YAxis
-                  axisLine={false}
-                  tickLine={false}
-                  style={{ fontSize: "11px", fill: "var(--muted-foreground)" }}
-                />
-                <Tooltip
-                  cursor={{ fill: "var(--muted)" }}
-                  contentStyle={{
-                    backgroundColor: "var(--card)",
-                    borderColor: "var(--border)",
-                    borderRadius: "8px",
-                  }}
-                  itemStyle={{ color: "var(--primary)" }}
-                />
-                <Bar dataKey="total" fill="oklch(0.78 0.08 145)" radius={[4, 4, 0, 0]} barSize={28} />
-              </BarChart>
-            </ResponsiveContainer>
-          </CardContent>
-        </Card>
-
-        {/* Acurácia de OCR / IA por Tribunal */}
-        <Card className="col-span-1">
-          <CardHeader>
-            <CardTitle className="text-base font-semibold">Acurácia de OCR por Diário</CardTitle>
-            <CardDescription>Percentual de leitura correta sem falha crítica</CardDescription>
-          </CardHeader>
-          <CardContent className="h-72">
-            <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={dataAcuraciaTribunal} margin={{ top: 10, right: 10, left: -10, bottom: 5 }}>
-                <XAxis
-                  dataKey="tribunal"
-                  axisLine={false}
-                  tickLine={false}
-                  style={{ fontSize: "11px", fill: "var(--muted-foreground)" }}
-                />
-                <YAxis
-                  axisLine={false}
-                  tickLine={false}
-                  domain={[80, 100]}
-                  style={{ fontSize: "11px", fill: "var(--muted-foreground)" }}
-                />
-                <Tooltip
-                  contentStyle={{
-                    backgroundColor: "var(--card)",
-                    borderColor: "var(--border)",
-                    borderRadius: "8px",
-                  }}
-                  itemStyle={{ color: "oklch(0.74 0.09 20)" }}
-                />
-                <Line
-                  type="monotone"
-                  dataKey="acuracia"
-                  stroke="oklch(0.74 0.09 20)"
-                  strokeWidth={2.5}
-                  dot={{ r: 4 }}
-                  activeDot={{ r: 6 }}
-                />
-              </LineChart>
-            </ResponsiveContainer>
-          </CardContent>
-        </Card>
-
-        {/* Volume de Varreduras (Ciclos CRON por Hora) */}
-        <Card className="col-span-1 md:col-span-2">
-          <CardHeader>
-            <CardTitle className="text-base font-semibold">Volume de Execuções por Hora (CRON)</CardTitle>
-            <CardDescription>Tráfego e vazão de dados dos robôs em tempo real</CardDescription>
-          </CardHeader>
-          <CardContent className="h-72">
-            <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={dataVolumeVarreduras} margin={{ top: 10, right: 20, left: -10, bottom: 0 }}>
-                <defs>
-                  <linearGradient id="colorVolume" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="var(--primary)" stopOpacity={0.15} />
-                    <stop offset="95%" stopColor="var(--primary)" stopOpacity={0.0} />
-                  </linearGradient>
-                </defs>
-                <XAxis
-                  dataKey="hora"
-                  axisLine={false}
-                  tickLine={false}
-                  style={{ fontSize: "11px", fill: "var(--muted-foreground)" }}
-                />
-                <YAxis
-                  axisLine={false}
-                  tickLine={false}
-                  style={{ fontSize: "11px", fill: "var(--muted-foreground)" }}
-                />
-                <Tooltip
-                  contentStyle={{
-                    backgroundColor: "var(--card)",
-                    borderColor: "var(--border)",
-                    borderRadius: "8px",
-                  }}
-                  itemStyle={{ color: "var(--primary)" }}
-                />
-                <Area
-                  type="monotone"
-                  dataKey="volume"
-                  name="Requisições/Hora"
-                  stroke="var(--primary)"
-                  strokeOpacity={0.7}
-                  strokeWidth={2}
-                  fillOpacity={1}
-                  fill="url(#colorVolume)"
-                />
-              </AreaChart>
-            </ResponsiveContainer>
-          </CardContent>
-        </Card>
-
-        {/* Confiança de Extração: Automático vs Revisão Humana */}
-        <Card className="col-span-1">
-          <CardHeader>
-            <CardTitle className="text-base font-semibold">Decisões: Auto (Confiança) vs Revisão</CardTitle>
-            <CardDescription>Relação de validação por ciclos diários</CardDescription>
-          </CardHeader>
-          <CardContent className="h-72">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={dataConfiancaStatus} margin={{ top: 10, right: 10, left: -10, bottom: 5 }}>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} opacity={0.15} />
-                <XAxis
-                  dataKey="date"
-                  axisLine={false}
-                  tickLine={false}
-                  style={{ fontSize: "11px", fill: "var(--muted-foreground)" }}
-                />
-                <YAxis
-                  axisLine={false}
-                  tickLine={false}
-                  style={{ fontSize: "11px", fill: "var(--muted-foreground)" }}
-                />
-                <Tooltip
-                  cursor={{ fill: "var(--muted)" }}
-                  contentStyle={{
-                    backgroundColor: "var(--card)",
-                    borderColor: "var(--border)",
-                    borderRadius: "8px",
-                  }}
-                  itemStyle={{ color: "var(--foreground)" }}
-                />
-                <Legend />
-                <Bar dataKey="Automático" name="Alta Confiança" fill="oklch(0.75 0.08 240)" radius={[4, 4, 0, 0]} />
-                <Bar dataKey="Revisao" name="Revisão Humana" fill="oklch(0.74 0.09 20)" radius={[4, 4, 0, 0]} />
-              </BarChart>
-            </ResponsiveContainer>
+          <CardContent className="flex flex-col gap-1 pt-1">
+            {agenda.map((ev, i) => (
+              <div
+                key={i}
+                className="flex items-center gap-3 rounded-lg px-2 py-2 hover:bg-muted/30 transition-colors"
+              >
+                <div className="flex flex-col items-center justify-center rounded-md bg-muted/60 px-2 py-1 shrink-0 w-12">
+                  <CalendarClock className="size-3 text-muted-foreground mb-0.5" />
+                  <span className="text-[10px] font-semibold text-foreground tabular-nums">
+                    {ev.data}
+                  </span>
+                </div>
+                <div className="flex flex-col min-w-0 flex-1">
+                  <span className="text-xs font-medium text-foreground truncate">
+                    {ev.tipo}
+                  </span>
+                  <span className="text-[11px] text-muted-foreground truncate">
+                    {ev.cliente}
+                  </span>
+                </div>
+                <span className="text-xs font-semibold text-foreground tabular-nums shrink-0">
+                  {ev.valor}
+                </span>
+              </div>
+            ))}
+            <Link
+              href="/controladoria/saida"
+              className="mt-2 inline-flex items-center justify-center gap-1 text-xs font-medium text-primary hover:bg-primary/10 rounded-md px-2 py-2 transition-colors"
+            >
+              Ver todas as saídas
+              <ArrowUpRight className="size-3.5" />
+            </Link>
           </CardContent>
         </Card>
       </div>
