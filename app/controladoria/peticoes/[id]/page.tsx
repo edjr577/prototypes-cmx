@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 export default function RedirectPage() {
   const router = useRouter();
   useEffect(() => {
-    router.replace("/controladoria/peticoes");
+    router.replace("/controladoria/peticoes/inicial");
   }, [router]);
 
   return null;

@@ -477,7 +477,7 @@ export function Sidebar() {
 
                     // For prototype, we allow the main dashboards and IA. Others are marked disabled.
                     // Main ones: /administrativo, /crm, /erp, /controladoria, /administrativo/ia
-                    const isAllowed = ["/administrativo", "/administrativo/ia", "/administrativo/ia/conversas", "/crm", "/erp", "/controladoria", "/controladoria/comercial", "/controladoria/saida", "/controladoria/financeiro", "/controladoria/equipe", "/controladoria/metas", "/controladoria/plataforma", "/controladoria/peticoes"].includes(item.href) || item.action === "open_modelos";
+                    const isAllowed = ["/administrativo", "/administrativo/ia", "/administrativo/ia/conversas", "/crm", "/erp", "/controladoria", "/controladoria/comercial", "/controladoria/saida", "/controladoria/financeiro", "/controladoria/equipe", "/controladoria/metas", "/controladoria/plataforma", "/controladoria/peticoes", "/controladoria/peticoes/inicial"].includes(item.href) || item.action === "open_modelos";
                     const isTarefas = item.name === "Tarefas" && pathname.startsWith("/controladoria");
 
                     if (item.action === "open_modelos") {
