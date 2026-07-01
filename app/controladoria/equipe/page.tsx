@@ -10,8 +10,10 @@ import {
 } from "@/components/ui/card";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { useDemoFeedback } from "@/components/ui/demo-feedback";
 import { useMetas, statusOf } from "../metas-context";
+import { ProdutividadeTab, PontualidadeTab } from "./taskscore-views";
 import {
   RefreshCw,
   Download,
@@ -22,6 +24,8 @@ import {
   RotateCcw,
   ArrowUpRight,
   Target,
+  Trophy,
+  Clock,
 } from "lucide-react";
 import {
   ResponsiveContainer,
@@ -226,6 +230,21 @@ export default function EquipePage() {
         </div>
       </div>
 
+      {/* --- TABS: QUALIDADE · PRODUTIVIDADE · PONTUALIDADE --- */}
+      <Tabs defaultValue="qualidade" className="gap-6">
+        <TabsList variant="line">
+          <TabsTrigger value="qualidade" className="gap-1.5">
+            <Award className="size-4" /> Qualidade
+          </TabsTrigger>
+          <TabsTrigger value="produtividade" className="gap-1.5">
+            <Trophy className="size-4" /> Produtividade
+          </TabsTrigger>
+          <TabsTrigger value="pontualidade" className="gap-1.5">
+            <Clock className="size-4" /> Pontualidade
+          </TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="qualidade" className="flex flex-col gap-6">
       {/* --- HERO + PRODUÇÃO --- */}
       <div className="grid gap-4 lg:grid-cols-3">
         {/* Hero metric: taxa de êxito + scorecard de qualidade */}
@@ -537,6 +556,16 @@ export default function EquipePage() {
           </div>
         </CardContent>
       </Card>
+        </TabsContent>
+
+        <TabsContent value="produtividade" className="flex flex-col gap-6">
+          <ProdutividadeTab />
+        </TabsContent>
+
+        <TabsContent value="pontualidade" className="flex flex-col gap-6">
+          <PontualidadeTab />
+        </TabsContent>
+      </Tabs>
 
       {Toast}
     </div>

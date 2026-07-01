@@ -271,7 +271,7 @@ const controladoriaMenuData: MenuSection[] = [
       { name: "Comercial", href: "/controladoria/comercial", icon: TrendingUp, description: "Estou vendendo bem? Captação e conversão" },
       { name: "Saída", href: "/controladoria/saida", icon: Coins, description: "O que vai virar honorário? Benefícios, RPVs e acordos" },
       { name: "Financeiro", href: "/controladoria/financeiro", icon: Wallet, description: "Estou convertendo contratos em caixa? Quem pagou e atraso" },
-      { name: "Equipe", href: "/controladoria/equipe", icon: Users, description: "Entrego com qualidade e prazo? Quem produziu e acumulou" },
+      { name: "Equipe", href: "/controladoria/equipe", icon: Users, description: "Entrego com qualidade e prazo? Produtividade, Taskscore e prazos" },
     ]
   },
   {
@@ -333,6 +333,7 @@ const controladoriaMenuData: MenuSection[] = [
     items: [
       { name: "CONFIGURAÇÕES", href: "#", icon: Sparkles, isHeader: true },
       { name: "Escritório", href: "/controladoria/configuracoes/escritorio", icon: Settings },
+      { name: "Notificações", href: "/controladoria/configuracoes/notificacoes", icon: Bell },
       { name: "Mapeamento", href: "/controladoria/configuracoes/mapeamento", icon: Map },
     ]
   }
@@ -477,7 +478,7 @@ export function Sidebar() {
 
                     // For prototype, we allow the main dashboards and IA. Others are marked disabled.
                     // Main ones: /administrativo, /crm, /erp, /controladoria, /administrativo/ia
-                    const isAllowed = ["/administrativo", "/administrativo/ia", "/administrativo/ia/conversas", "/crm", "/erp", "/controladoria", "/controladoria/comercial", "/controladoria/saida", "/controladoria/financeiro", "/controladoria/equipe", "/controladoria/metas", "/controladoria/plataforma", "/controladoria/peticoes", "/controladoria/peticoes/inicial"].includes(item.href) || item.action === "open_modelos";
+                    const isAllowed = ["/administrativo", "/administrativo/ia", "/administrativo/ia/conversas", "/crm", "/erp", "/controladoria", "/controladoria/comercial", "/controladoria/saida", "/controladoria/financeiro", "/controladoria/equipe", "/controladoria/metas", "/controladoria/plataforma", "/controladoria/configuracoes/notificacoes", "/controladoria/peticoes", "/controladoria/peticoes/inicial"].includes(item.href) || item.action === "open_modelos";
                     const isTarefas = item.name === "Tarefas" && pathname.startsWith("/controladoria");
 
                     if (item.action === "open_modelos") {
